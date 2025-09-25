@@ -460,6 +460,7 @@ class SearchManager {
             { name: 'gas', title: 'GAS（Goal Attainment Scaling）', keywords: ['GAS','ゴール','目標','達成度','Tスコア','共同','エンパワメント'], icon: 'fas fa-bullseye' },
             { name: 'homeenv', title: '在宅環境チェックリスト', keywords: ['在宅','環境','転倒','バリアフリー','衛生','緊急','防災','福祉用具'], icon: 'fas fa-house-chimney' },
             { name: 'socnet', title: 'ソーシャルネットワーク・マッピング', keywords: ['社会資源','家族','近隣','ボランティア','緊急連絡','関係図','連絡網'], icon: 'fas fa-project-diagram' }
+            ,{ name: 'zrhome', title: 'ZR-HOME（在宅環境Q/D）', keywords: ['在宅','環境','ZR-HOME','スクリーニング','詳細','段差','浴室','階段','照明','配線','警報','緊急','本人要因'], icon: 'fas fa-house-circle-check' }
         ];
     }
 
@@ -674,6 +675,7 @@ class ToolFactory {
             'gas': () => new GASTool(),
             'homeenv': () => new HomeEnvTool(),
             'socnet': () => new SocialNetworkTool(),
+            'zrhome': () => new ZRHomeTool(),
         };
 
         const toolCreator = toolMap[toolName];
