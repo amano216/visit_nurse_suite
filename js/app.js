@@ -448,6 +448,7 @@ class SearchManager {
             { name: 'painad', title: 'PAINAD（認知症疼痛）', keywords: ['PAINAD','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-face-frown' },
             { name: 'abbeypain', title: 'Abbey Pain Scale', keywords: ['Abbey','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-clipboard-list' },
             { name: 'o2fio2', title: 'O2投与量⇔FiO2換算', keywords: ['FiO2','酸素','酸素流量','鼻カニュラ','マスク','在宅酸素','HOT','換算','O2','デバイス'], icon: 'fas fa-head-side-mask' },
+            { name: 'drip', title: '点滴速度（滴下計算）', keywords: ['点滴','滴下','gtt','mL/h','秒/滴','早見','20滴','60滴','輸液','投与量','時間'], icon: 'fas fa-droplet' },
             // 疼痛拡張: OME/BT, CPOT, BPS
             { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','OMED','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算','経口','PO','貼付','パッチ','TD','静注','IV','皮下注','SC'], icon: 'fas fa-scale-balanced' },
             { name: 'cpot', title: 'CPOT（非言語的疼痛）', keywords: ['CPOT','疼痛','表情','筋緊張','体動','人工呼吸器','非言語','評価'], icon: 'fas fa-face-grimace' },
@@ -560,6 +561,7 @@ class SearchManager {
                     <li>「栄養」「MNA-SF」- 栄養評価ツール</li>
                     <li>「敗血症」「qSOFA」- 重症度評価</li>
                     <li>「意識」「GCS」- 意識レベル評価</li>
+                    <li>「点滴」「gtt」- 点滴速度の早見と計算</li>
                 </ul>
             </div>
         `;
@@ -653,6 +655,7 @@ class ToolFactory {
             'painad': () => new PAINADTool(),
             'abbeypain': () => new AbbeyPainTool(),
             'o2fio2': () => new O2FiO2Tool(),
+            'drip': () => new DripRateTool(),
             // 疼痛拡張
             'ome': () => new OpioidEquivalenceTool(),
             'cpot': () => new CPOTTool(),
