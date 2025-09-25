@@ -416,7 +416,7 @@ class SearchManager {
             { name: 'barthel', title: 'Barthel Index（ADL）', keywords: ['barthel', 'adl', '日常生活', '自立度', '介護'], icon: 'fas fa-walking' },
             { name: 'ostomy', title: 'ストマケア（DET）', keywords: ['ストマ', 'ストーマ', 'オストミー', 'DET', '皮膚障害', '装具', '尿路', 'カットサイズ'], icon: 'fas fa-toilet' },
             { name: 'hf', title: '心不全評価（NYHA/Framingham/プロファイル）', keywords: ['心不全', 'NYHA', 'Framingham', 'うっ血', '起坐呼吸', 'PND', '体重増加', 'Warm', 'Cold', 'Wet', 'Dry'], icon: 'fas fa-heart' },
-            { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', '酸素濃度', '在宅酸素', 'HOT', 'S/F', 'SF比', 'ROX'], icon: 'fas fa-lungs' },
+            { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', '酸素濃度', '在宅酸素', 'HOT', 'S/F', 'SF比', 'ROX', 'ROX index', '呼吸数', 'RR'], icon: 'fas fa-lungs' },
             { name: 'alsfrs', title: 'ALS-FRS-R', keywords: ['ALS', 'FRS', '球麻痺', '巧緻運動', '呼吸'], icon: 'fas fa-dna' },
             { name: 'braden', title: 'Braden褥瘡リスク', keywords: ['ブレーデン', '褥瘡', '圧迫', 'スキン', '皮膚', 'リスク'], icon: 'fas fa-procedures' },
             { name: 'morse', title: 'Morse転倒リスク', keywords: ['モース', '転倒', 'リスク', '歩行', '補助具', '点滴'], icon: 'fas fa-person-falling' },
