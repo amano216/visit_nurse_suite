@@ -387,6 +387,7 @@ class RespiratoryTool extends BaseTool {
               <option value="air">室内空気</option>
               <option value="nc">鼻カニュラ</option>
               <option value="sm">シンプルマスク</option>
+              <option value="vm">ベンチュリーマスク</option>
               <option value="nrb">リザーバーマスク</option>
             </select>
           </div>
@@ -448,12 +449,21 @@ class RespiratoryCalculator {
       // 室内気21% + 1L/分ごとに約4%上昇（上限目安 4L）
       const f = Math.min(Math.max(flow, 0), 4);
       fio2 = Math.min(0.21 + 0.04 * f, 0.45);
+    } else if (device === 'vm') {
+      // ベンチュリは設定FiO2をそのまま（入力は換算ツール側で扱うため、ここではデバイス選択のみ）
+      // 呼吸評価では固定の%がないため、FiO2は推定できない→エラーメッセージで促す
+      return this.showError('ベンチュリーマスクは固定FiO2のため、S/F比の推定には具体的なFiO2%が必要です。換算ツールで確認してください。');
     } else if (device === 'sm') {
-      // 6-10Lを想定して0.4-0.6で近似
-      if (flow <= 0) return this.showError('シンプルマスクの流量を入力してください（6-10L目安）。');
-      fio2 = Math.max(0.4, Math.min(0.6, 0.3 + 0.03 * flow));
+      // 6-10Lで35-50%を線形近似
+      if (flow < 5) return this.showError('シンプルマスクはCO2再呼吸回避のため5L/分以上に設定してください。');
+      const f = Math.min(Math.max(flow, 6), 10);
+      const slope = (0.50-0.35)/(10-6);
+      fio2 = 0.35 + slope*(f-6);
     } else if (device === 'nrb') {
-      fio2 = 0.8; // 目安
+      // 10-15Lで60-80%を線形近似
+      const f = Math.min(Math.max(flow||10, 10), 15);
+      const slope = (0.80-0.60)/(15-10);
+      fio2 = 0.60 + slope*(f-10);
     }
 
     const sf = spo2 / fio2; // S/F比

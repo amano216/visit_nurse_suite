@@ -1113,10 +1113,21 @@ class O2FiO2Tool extends BaseTool {
               <option value="air">室内空気</option>
               <option value="nc">鼻カニュラ</option>
               <option value="sm">シンプルマスク</option>
+              <option value="vm">ベンチュリーマスク</option>
               <option value="nrb">リザーバーマスク</option>
             </select>
           </div>
-          <div class="form-group"><label for="o2flow">流量 (L/分)</label><input id="o2flow" type="number" step="0.5" min="0" placeholder="例: 2"><small>鼻カニュラは「室内気21% + 1L/分ごとに約4%上昇」の経験則で推定（上限目安4L）。</small></div>
+          <div class="form-group"><label for="o2flow">流量 (L/分)</label><input id="o2flow" type="number" step="0.5" min="0" placeholder="例: 2"><small>鼻カニュラは「室内気21% + 1L/分ごとに約4%上昇」の経験則（上限目安4L）。ベンチュリーマスクは下の%設定を使用。</small></div>
+          <div class="form-group"><label for="o2venturi">ベンチュリーバルブ（%）</label>
+            <select id="o2venturi">
+              <option value="">-- 選択 --</option>
+              <option value="24">24%</option>
+              <option value="28">28%</option>
+              <option value="35">35%</option>
+              <option value="40">40%</option>
+              <option value="60">60%</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="assessment-section">
@@ -1149,8 +1160,23 @@ class O2FiO2Calculator {
       const f = Math.min(Math.max(flow, 0), 4);
       return Math.min(0.21 + 0.04*f, 0.45);
     }
-    if (device==='sm') { if (flow<=0) return NaN; return Math.max(0.4, Math.min(0.6, 0.3 + 0.03*flow)); }
-    if (device==='nrb') return 0.8;
+    if (device==='vm') {
+      const v = parseFloat(document.getElementById('o2venturi')?.value)||NaN;
+      return Number.isFinite(v) ? v/100 : NaN; // ベンチュリは設定値をそのまま採用
+    }
+    if (device==='sm') {
+      if (flow < 5) return NaN; // CO2再呼吸の懸念、5L未満は非推奨
+      // 6-10Lで FiO2 0.35-0.50 を線形で近似（中間値を返す）
+      const f = Math.min(Math.max(flow, 6), 10);
+      const slope = (0.50-0.35)/(10-6); // 0.0375
+      return 0.35 + slope*(f-6);
+    }
+    if (device==='nrb') {
+      // 10-15Lで 0.60-0.80 を線形で近似（中間値を返す）
+      const f = Math.min(Math.max(flow||10, 10), 15);
+      const slope = (0.80-0.60)/(15-10); // 0.04
+      return 0.60 + slope*(f-10);
+    }
     return NaN;
   }
   invFlowForTarget(device, targetFiO2){
@@ -1162,9 +1188,20 @@ class O2FiO2Calculator {
       const flow = (t-0.21)/0.04;
       return Math.min(Math.max(flow, 0), 4);
     }
-    if (device==='sm') { // 0.4-0.6 ~ 6-10L近似
-      if (t<=0.4) return 6; if (t>=0.6) return 10; return (t-0.3)/0.03; }
+    if (device==='sm') {
+      // 0.35-0.50 ~ 6-10L の線形近似
+      if (t<=0.35) return 6; if (t>=0.50) return 10; const slope=(10-6)/(0.50-0.35); return 6 + (t-0.35)*slope; }
+    if (device==='nrb') {
+      // 0.60-0.80 ~ 10-15L の線形近似
+      if (t<=0.60) return 10; if (t>=0.80) return 15; const slope=(15-10)/(0.80-0.60); return 10 + (t-0.60)*slope; }
     return NaN;
+  }
+  fio2Text(device, flow, value){
+    if (device==='sm') return '35–50%';
+    if (device==='nrb') return '60–80%';
+    const pct = (value*100).toFixed(0)+'%';
+    if (device==='vm') return pct; // 設定値
+    return pct; // nc/airなど単一値
   }
   calc(){
     const dev=document.getElementById('o2dev')?.value||'air';
@@ -1175,13 +1212,14 @@ class O2FiO2Calculator {
     const fio2 = this.estFiO2(dev, flow);
     const recFlow = Number.isFinite(tgt)? this.invFlowForTarget(dev2, tgt) : NaN;
     if (!Number.isFinite(fio2)) { el.innerHTML='<div class="alert alert-danger">デバイス/流量を正しく入力してください。</div>'; el.style.display='block'; return; }
+    const fio2Text = this.fio2Text(dev, flow, fio2);
     let recText='';
     if (Number.isFinite(recFlow)) {
       recText = `<div class="result-item"><strong>目標${dev2}の推奨流量:</strong> <span class="highlight">${recFlow.toFixed(1)}</span> L/分</div>`;
     }
     el.innerHTML = `
       <h3>O2⇔FiO2換算</h3>
-      <div class="result-item"><strong>推定FiO2:</strong> <span class="highlight">${(fio2*100).toFixed(0)}</span>%（${dev}${flow>0?` / ${flow} L/分`:''}）</div>
+      <div class="result-item"><strong>推定FiO2:</strong> <span class="highlight">${fio2Text}</span>（${dev}${flow>0?` / ${flow} L/分`:''}）</div>
       ${recText}
       <div class="alert ${fio2>=0.4?'alert-warning':'alert-info'}">目安換算です。臨床状況に応じてSpO2・呼吸状態を確認し、必要時は医師と相談してください。</div>
     `;
