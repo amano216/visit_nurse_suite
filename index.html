@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訪問看護臨床ツール</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-user-nurse"></i> 訪問看護臨床ツール</h1>
+                <div class="search-container">
+                    <input type="text" id="globalSearch" placeholder="ツールを検索..." class="search-input">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Menu -->
+        <nav class="nav-menu" id="navMenu">
+            <div class="nav-section">
+                <h3><i class="fas fa-calculator"></i> 投薬・器具</h3>
+                <ul>
+                    <li><a href="#cadd-calculator" data-tool="cadd">CADD交換時期計算</a></li>
+                    <li><a href="#narcotic-calculator" data-tool="narcotic">麻薬投与量計算</a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <h3><i class="fas fa-utensils"></i> 栄養評価</h3>
+                <ul>
+                    <li><a href="#harris-benedict" data-tool="harris">Harris-Benedict式</a></li>
+                    <li><a href="#mna" data-tool="mna">MNA評価</a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <h3><i class="fas fa-heart-pulse"></i> 重症度評価</h3>
+                <ul>
+                    <li><a href="#qsofa" data-tool="qsofa">qSOFA</a></li>
+                    <li><a href="#news" data-tool="news">NEWS</a></li>
+                    <li><a href="#ppi" data-tool="ppi">PPI（がん予後指数）</a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <h3><i class="fas fa-stethoscope"></i> 基本評価ツール</h3>
+                <ul>
+                    <li><a href="#bmi" data-tool="bmi">BMI計算</a></li>
+                    <li><a href="#gcs" data-tool="gcs">Glasgow Coma Scale</a></li>
+                    <li><a href="#mmse" data-tool="mmse">MMSE</a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <h3><i class="fas fa-procedures"></i> 高度評価ツール</h3>
+                <ul>
+                    <li><a href="#sirs" data-tool="sirs">SIRS評価</a></li>
+                    <li><a href="#wound" data-tool="wound">創傷評価（DESIGN-R）</a></li>
+                    <li><a href="#pain" data-tool="pain">疼痛評価（NRS）</a></li>
+                        <li><a href="#barthel" data-tool="barthel"><i class="fas fa-person-cane"></i> Barthel Index（ADL）</a></li>
+                </ul>
+            </div>
+                <div class="nav-section">
+                    <h3>専門</h3>
+                    <ul>
+                        <li><a href="#" data-tool="ostomy"><i class="fas fa-toilet"></i> ストマケア（DET）</a></li>
+                        <li><a href="#" data-tool="hf"><i class="fas fa-heart"></i> 心不全評価</a></li>
+                        <li><a href="#" data-tool="resp"><i class="fas fa-lungs"></i> 呼吸評価（mMRC/CAT/SF）</a></li>
+                        <li><a href="#" data-tool="alsfrs"><i class="fas fa-dna"></i> ALS-FRS-R</a></li>
+                    <li><a href="#" data-tool="braden"><i class="fas fa-procedures"></i> Braden褥瘡リスク</a></li>
+                    <li><a href="#" data-tool="morse"><i class="fas fa-person-falling"></i> Morse転倒リスク</a></li>
+                    <li><a href="#" data-tool="esas"><i class="fas fa-notes-medical"></i> ESAS-r症状評価</a></li>
+                    <li><a href="#" data-tool="pps"><i class="fas fa-percentage"></i> PPS</a></li>
+                    <li><a href="#" data-tool="crcl"><i class="fas fa-vial"></i> Cockcroft-Gault</a></li>
+                    <li><a href="#" data-tool="delirium4"><i class="fas fa-bed"></i> 急性意識障害（4項）</a></li>
+                    <li><a href="#" data-tool="sarcf"><i class="fas fa-dumbbell"></i> SARC-F</a></li>
+                    <li><a href="#" data-tool="must"><i class="fas fa-seedling"></i> MUST</a></li>
+                    <li><a href="#" data-tool="cfs"><i class="fas fa-user-injured"></i> CFS（フレイル）</a></li>
+                    <li><a href="#" data-tool="phq9"><i class="fas fa-face-meh"></i> PHQ-9（抑うつ）</a></li>
+                    <li><a href="#" data-tool="adrop"><i class="fas fa-lungs"></i> A-DROP（肺炎）</a></li>
+                    <li><a href="#" data-tool="rasspal"><i class="fas fa-bed"></i> RASS-PAL（鎮静）</a></li>
+                    <li><a href="#" data-tool="cam"><i class="fas fa-brain"></i> CAM（せん妄）</a></li>
+                    <li><a href="#" data-tool="minicog"><i class="fas fa-brain"></i> Mini-Cog（認知）</a></li>
+                    <li><a href="#" data-tool="cci"><i class="fas fa-list-check"></i> Charlson CCI</a></li>
+                    <li><a href="#" data-tool="stoppstart"><i class="fas fa-prescription-bottle-medical"></i> STOPP/START（参考）</a></li>
+                    <li><a href="#" data-tool="beers"><i class="fas fa-book-medical"></i> Beers（参考）</a></li>
+                    <li><a href="#" data-tool="stopbang"><i class="fas fa-moon"></i> STOP-Bang（OSA）</a></li>
+                    <li><a href="#" data-tool="acp"><i class="fas fa-file-signature"></i> DNAR/ACP支援</a></li>
+                    </ul>
+                </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Section -->
+            <section id="welcome" class="tool-section active">
+                <div class="welcome-container">
+                    <h2>訪問看護臨床ツールへようこそ</h2>
+                    <p>左のメニューまたは上部の検索バーからツールを選択してご利用ください。</p>
+                    <div class="tool-grid">
+                        <div class="tool-card" data-tool="cadd">
+                            <i class="fas fa-syringe"></i>
+                            <h3>CADD交換時期</h3>
+                            <p>リザーバー容量から交換時期を計算</p>
+                        </div>
+                        <div class="tool-card" data-tool="narcotic">
+                            <i class="fas fa-pills"></i>
+                            <h3>麻薬投与量</h3>
+                            <p>各種麻薬の投与量を計算</p>
+                        </div>
+                        <div class="tool-card" data-tool="harris">
+                            <i class="fas fa-calculator"></i>
+                            <h3>Harris-Benedict式</h3>
+                            <p>基礎代謝量を計算</p>
+                        </div>
+                        <div class="tool-card" data-tool="qsofa">
+                            <i class="fas fa-heartbeat"></i>
+                            <h3>qSOFA</h3>
+                            <p>敗血症の重症度評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="mna">
+                            <i class="fas fa-apple-alt"></i>
+                            <h3>MNA評価</h3>
+                            <p>栄養状態の評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="news">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>NEWS</h3>
+                            <p>早期警告スコア</p>
+                        </div>
+                        <div class="tool-card" data-tool="wound">
+                            <i class="fas fa-band-aid"></i>
+                            <h3>創傷評価</h3>
+                            <p>褥瘡・創傷の重症度評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="pain">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h3>疼痛評価</h3>
+                            <p>数値評価スケール</p>
+                        </div>
+                        <div class="tool-card" data-tool="braden">
+                            <i class="fas fa-procedures"></i>
+                            <h3>Braden</h3>
+                            <p>褥瘡リスクの簡易評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="morse">
+                            <i class="fas fa-person-falling"></i>
+                            <h3>Morse</h3>
+                            <p>転倒リスクの簡易評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="esas">
+                            <i class="fas fa-notes-medical"></i>
+                            <h3>ESAS-r</h3>
+                            <p>苦痛症状の可視化</p>
+                        </div>
+                        <div class="tool-card" data-tool="pps">
+                            <i class="fas fa-percentage"></i>
+                            <h3>PPS</h3>
+                            <p>パフォーマンス%評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="crcl">
+                            <i class="fas fa-vial"></i>
+                            <h3>Cockcroft-Gault</h3>
+                            <p>腎機能推定（CrCl）</p>
+                        </div>
+                        <div class="tool-card" data-tool="cfs">
+                            <i class="fas fa-user-injured"></i>
+                            <h3>CFS</h3>
+                            <p>フレイル評価（1-9）</p>
+                        </div>
+                        <div class="tool-card" data-tool="phq9">
+                            <i class="fas fa-face-meh"></i>
+                            <h3>PHQ-9</h3>
+                            <p>抑うつスクリーニング</p>
+                        </div>
+                        <div class="tool-card" data-tool="adrop">
+                            <i class="fas fa-lungs"></i>
+                            <h3>A-DROP</h3>
+                            <p>肺炎重症度（A-DROP）</p>
+                        </div>
+                        <div class="tool-card" data-tool="rasspal">
+                            <i class="fas fa-bed"></i>
+                            <h3>RASS-PAL</h3>
+                            <p>緩和ケア鎮静評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="ostomy">
+                            <i class="fas fa-toilet"></i>
+                            <h3>ストマケア（DET）</h3>
+                            <p>DETと条件からケア/装具を提案</p>
+                        </div>
+                        <div class="tool-card" data-tool="hf">
+                            <i class="fas fa-heart"></i>
+                            <h3>心不全評価</h3>
+                            <p>NYHA/Framingham/プロファイル評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="resp">
+                            <i class="fas fa-lungs"></i>
+                            <h3>呼吸評価</h3>
+                            <p>mMRC/CATとS/F比で評価</p>
+                        </div>
+                        <div class="tool-card" data-tool="alsfrs">
+                            <i class="fas fa-dna"></i>
+                            <h3>ALS-FRS-R</h3>
+                            <p>12項目0-4（合計0-48）</p>
+                        </div>
+                        <div class="tool-card" data-tool="cam">
+                            <i class="fas fa-brain"></i>
+                            <h3>CAM</h3>
+                            <p>せん妄（急性/注意/思考/意識）</p>
+                        </div>
+                        <div class="tool-card" data-tool="minicog">
+                            <i class="fas fa-brain"></i>
+                            <h3>Mini-Cog</h3>
+                            <p>3語記銘と時計描画</p>
+                        </div>
+                        <div class="tool-card" data-tool="cci">
+                            <i class="fas fa-list-check"></i>
+                            <h3>Charlson CCI</h3>
+                            <p>併存疾患負荷（予後）</p>
+                        </div>
+                        <div class="tool-card" data-tool="stoppstart">
+                            <i class="fas fa-prescription-bottle-medical"></i>
+                            <h3>STOPP/START</h3>
+                            <p>高齢者処方（参考）</p>
+                        </div>
+                        <div class="tool-card" data-tool="beers">
+                            <i class="fas fa-book-medical"></i>
+                            <h3>Beers</h3>
+                            <p>潜在的不適切処方（参考）</p>
+                        </div>
+                        <div class="tool-card" data-tool="stopbang">
+                            <i class="fas fa-moon"></i>
+                            <h3>STOP-Bang</h3>
+                            <p>OSA簡易スクリーニング</p>
+                        </div>
+                        <div class="tool-card" data-tool="acp">
+                            <i class="fas fa-file-signature"></i>
+                            <h3>DNAR/ACP</h3>
+                            <p>意思決定支援チェック</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tool Sections will be loaded here -->
+            <div id="toolContainer"></div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 訪問看護臨床ツール - 臨床支援システム</p>
+        </footer>
+    </div>
+
+        <script src="js/app.js"></script>
+        <script src="js/additional-tools.js"></script>
+            <script src="js/advanced-tools.js"></script>
+            <script src="js/specialty-tools.js"></script>
+            <script src="js/expert-tools.js"></script>
+</body>
+</html>
