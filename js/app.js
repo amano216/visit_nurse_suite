@@ -375,7 +375,13 @@ class SearchManager {
             // 追加: Zarit-8 / OHAT-J / SAS
             { name: 'zarit8', title: 'Zarit-8（介護負担）', keywords: ['介護者','負担','zarit','家族','レスパイト'], icon: 'fas fa-users' },
             { name: 'ohatj', title: 'OHAT-J（口腔評価）', keywords: ['口腔','歯科','ohat','オーラル','義歯','口腔ケア'], icon: 'fas fa-tooth' },
-            { name: 'sas', title: 'SAS（身体活動能力早見）', keywords: ['運動','活動','mets','手術前','体力','耐久'], icon: 'fas fa-person-running' }
+            { name: 'sas', title: 'SAS（身体活動能力早見）', keywords: ['運動','活動','mets','手術前','体力','耐久'], icon: 'fas fa-person-running' },
+            // 追加: 酸素ボンベ時間 / ABCD-Stoma / SkinTear / PAINAD / AbbeyPain
+            { name: 'o2time', title: '酸素ボンベ残時間', keywords: ['酸素','O2','ボンベ','残量','圧力','流量','時間','在宅酸素'], icon: 'fas fa-clock' },
+            { name: 'abcdstoma', title: 'ABCD-Stoma評価', keywords: ['ABCD','stoma','ストマ','ストーマ','皮膚','合併症','リーク','ケア'], icon: 'fas fa-toilet' },
+            { name: 'skintear', title: 'Skin Tear（ISTAP）', keywords: ['スキンテア','皮膚裂傷','ISTAP','創傷','皮膚'], icon: 'fas fa-band-aid' },
+            { name: 'painad', title: 'PAINAD（認知症疼痛）', keywords: ['PAINAD','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-face-frown' },
+            { name: 'abbeypain', title: 'Abbey Pain Scale', keywords: ['Abbey','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-clipboard-list' }
         ];
     }
 
@@ -571,6 +577,12 @@ class ToolFactory {
             'zarit8': () => new Zarit8Tool(),
             'ohatj': () => new OHATJTool(),
             'sas': () => new SASTool(),
+            // 追加: 酸素ボンベ時間 / ABCD-Stoma / SkinTear / PAINAD / AbbeyPain
+            'o2time': () => new O2TimeTool(),
+            'abcdstoma': () => new ABCDStomaTool(),
+            'skintear': () => new SkinTearTool(),
+            'painad': () => new PAINADTool(),
+            'abbeypain': () => new AbbeyPainTool(),
         };
 
         const toolCreator = toolMap[toolName];

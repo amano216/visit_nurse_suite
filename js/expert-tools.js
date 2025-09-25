@@ -960,3 +960,182 @@ class ACPHelper {
     alert('サマリーをコピーしました');
   }
 }
+
+// -------- 酸素ボンベ 使用可能時間 --------
+class O2TimeTool extends BaseTool {
+  constructor(){ super('o2time','酸素ボンベ使用可能時間','現在圧（MPa）と流量（L/分）から残り使用可能時間を推定します。'); }
+  getIcon(){ return 'fas fa-wind'; }
+  renderContent(){
+    const capOpts = [200,400,1200,2800,7000];
+    return `
+      <div class="assessment-section">
+        <div class="form-row">
+          <div class="form-group"><label for="o2Capacity">定格内容量（L, 14.7MPa時）</label>
+            <select id="o2Capacity">${capOpts.map(v=>`<option value="${v}">${v} L</option>`).join('')}<option value="custom">カスタム</option></select>
+          </div>
+          <div class="form-group"><label for="o2CapacityCustom">カスタム内容量（L）</label><input type="number" id="o2CapacityCustom" step="1" min="1" placeholder="例: 3000" disabled></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="o2Pressure">現在圧（MPa）</label><input type="number" id="o2Pressure" step="0.1" min="0" placeholder="例: 10.5"></div>
+          <div class="form-group"><label for="o2Flow">流量（L/分）</label><input type="number" id="o2Flow" step="0.1" min="0.1" placeholder="例: 2"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="o2Reserve">残圧の確保（MPa, 任意）</label><input type="number" id="o2Reserve" step="0.1" min="0" placeholder="例: 3"></div>
+        </div>
+        <small>計算式：残量(L) = 定格内容量 × (現在圧 / 14.7)。残圧は任意で差し引きます。</small>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">計算</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="o2Result" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new O2TimeCalculator(); const el=s.querySelector('.calculator-instance');
+    const capSelHandler=(container)=>{
+      const sel=container.querySelector('#o2Capacity'); const custom=container.querySelector('#o2CapacityCustom');
+      sel.addEventListener('change',()=>{ custom.disabled = sel.value!=='custom'; if(sel.value!=='custom'){ custom.value=''; } });
+    };
+    setTimeout(()=>capSelHandler(s));
+    el.calculate=()=>inst.calculate(); el.reset=()=>inst.reset(); return s; }
+}
+class O2TimeCalculator {
+  getCapacity(){ const sel=document.getElementById('o2Capacity')?.value||''; if(sel==='custom'){ return parseFloat(document.getElementById('o2CapacityCustom')?.value)||0; } return parseFloat(sel)||0; }
+  calculate(){
+    const cap = this.getCapacity();
+    const p = parseFloat(document.getElementById('o2Pressure')?.value)||0;
+    const f = parseFloat(document.getElementById('o2Flow')?.value)||0;
+    const r = parseFloat(document.getElementById('o2Reserve')?.value)||0;
+    const el=document.getElementById('o2Result');
+    if(cap<=0||p<=0||f<=0){ el.innerHTML='<div class="alert alert-danger">内容量・現在圧・流量を入力してください。</div>'; el.style.display='block'; return; }
+    const totalL = cap * (p/14.7);
+    const reserveL = r>0? cap * (r/14.7) : 0;
+    const usableL = Math.max(totalL - reserveL, 0);
+    const minutes = usableL / f;
+    const h = Math.floor(minutes/60);
+    const m = Math.floor(minutes%60);
+    const eta = new Date(Date.now() + minutes*60000);
+    el.innerHTML = `<h3>酸素ボンベ 使用可能時間</h3>
+      <div class="result-item"><strong>残量（推定）:</strong> ${usableL.toFixed(0)} L</div>
+      <div class="result-item"><strong>使用可能時間:</strong> <span class="highlight">${h}時間 ${m}分</span> （${minutes.toFixed(1)} 分）</div>
+      <div class="alert ${minutes<30?'alert-danger':(minutes<90?'alert-warning':'alert-success')}">枯渇予測: ${eta.toLocaleString()}</div>`;
+    el.style.display='block';
+  }
+  reset(){ ['o2Pressure','o2Flow','o2Reserve','o2CapacityCustom'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const sel=document.getElementById('o2Capacity'); if(sel) sel.selectedIndex=0; const custom=document.getElementById('o2CapacityCustom'); if(custom) custom.disabled=true; const r=document.getElementById('o2Result'); if(r) r.style.display='none'; }
+}
+
+// -------- ABCD-Stoma 評価（参考） --------
+class ABCDStomaTool extends BaseTool {
+  constructor(){ super('abcdstoma','ABCD-Stoma評価','装具適合・体表・皮膚状態・位置/動きの4観点からケア提案（参考）。'); }
+  getIcon(){ return 'fas fa-toilet'; }
+  renderContent(){
+    const chk=(id,t)=>`<div class=\"form-group\"><label><input type=\"checkbox\" id=\"${id}\"> ${t}</label></div>`;
+    return `
+      <div class="assessment-section">
+        <h4><i class="fas fa-shield-alt"></i> A: Appliance（装具適合）</h4>
+        ${chk('aLeak','漏れ/周囲の滲出あり')} ${chk('aCut','開口サイズが合っていない')} ${chk('aWear','装具の装着期間が短い（<3日）')}
+        <h4><i class="fas fa-user"></i> B: Body（体表/突出）</h4>
+        ${chk('bFlat','平坦/陥没ストーマ')} ${chk('bCrease','しわ/溝/瘢痕が近接')} ${chk('bFold','腹部の屈曲で浮きやすい')}
+        <h4><i class="fas fa-heart"></i> C: Condition（皮膚状態）</h4>
+        ${chk('cIrr','発赤/びらん/掻痒')} ${chk('cFungal','カンジダ様衛星病変')} ${chk('cTrauma','機械的損傷')}
+        <h4><i class="fas fa-arrows-alt"></i> D: Dynamics（位置/動き）</h4>
+        ${chk('dNear','皺/臍/創部に近接')} ${chk('dSport','活動量が多く剥がれやすい')} ${chk('dSweat','発汗が多い')}
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').suggest()">提案を表示</button>
+      <div id="abcdResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new ABCDStomaHelper(); const el=s.querySelector('.calculator-instance'); el.suggest=()=>inst.suggest(); return s; }
+}
+class ABCDStomaHelper {
+  suggest(){
+    const on=id=> document.getElementById(id)?.checked;
+    const rec=[];
+    if(on('aLeak')||on('aCut')) rec.push('開口サイズの再測定とテンプレート更新、皮膚保護剤の見直し');
+    if(on('aWear')) rec.push('耐久性の高い装具/アクセサリで装着期間を延長（目標3-5日）');
+    if(on('bFlat')) rec.push('コンベックスやベルト、埋め込みリング/ペーストで平坦部を補正');
+    if(on('bCrease')||on('bFold')) rec.push('しわ方向に沿ったカット、パテ充填/フォームリングで隙間を封止');
+    if(on('cIrr')) rec.push('刺激の回避と保護（スキンバリア、皮膚洗浄と乾燥の徹底）');
+    if(on('cFungal')) rec.push('抗真菌パウダーの検討（医師指示のもと）');
+    if(on('cTrauma')) rec.push('剥離時の保護剤/リムーバー使用とテクニック見直し');
+    if(on('dNear')) rec.push('プレカットの形状調整/フレキシブル装具');
+    if(on('dSport')||on('dSweat')) rec.push('固定力強化：ベルト/テープ/周囲保護フィルム、発汗時の貼付タイミング調整');
+    const msg = rec.length? rec.map(s=>`<li>${s}</li>`).join('') : '<li>大きな問題は見当たりません。現行ケアの継続を。</li>';
+    const el=document.getElementById('abcdResult');
+    el.innerHTML=`<h3>ABCD-Stoma 提案</h3><ul>${msg}</ul><small>本結果は参考情報です。個別の臨床判断と自施設手順を優先してください。</small>`;
+    el.style.display='block';
+  }
+}
+
+// -------- Skin Tear（ISTAP分類） --------
+class SkinTearTool extends BaseTool {
+  constructor(){ super('skintear','Skin Tear（ISTAP）','皮膚裂傷をISTAP 1〜3で分類し、ケアの指針を表示します。'); }
+  getIcon(){ return 'fas fa-band-aid'; }
+  renderContent(){
+    return `
+      <div class="assessment-section">
+        <div class="form-group"><label><input type="radio" name="stType" value="1"> 型1：皮膚弁喪失なし（整復可能）</label></div>
+        <div class="form-group"><label><input type="radio" name="stType" value="2"> 型2：部分的皮膚弁喪失</label></div>
+        <div class="form-group"><label><input type="radio" name="stType" value="3"> 型3：完全な皮膚弁喪失</label></div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').showPlan()">ケア提案</button>
+      <div id="stResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new SkinTearHelper(); const el=s.querySelector('.calculator-instance'); el.showPlan=()=>inst.showPlan(); return s; }
+}
+class SkinTearHelper { showPlan(){ const v=document.querySelector('input[name="stType"]:checked')?.value; const el=document.getElementById('stResult'); if(!v){ el.innerHTML='<div class="alert alert-danger">分類を選択してください。</div>'; el.style.display='block'; return; } let plan=''; if(v==='1'){ plan='湿潤環境の確保、皮膚弁を整復し非固着性ドレッシングで保護。テープ牽引を避ける。'; } else if(v==='2'){ plan='創周囲の保護、適度な吸収能のある非固着性材で固定。ずれ/緊張の最小化。'; } else { plan='創の保護と感染兆候の監視。医師へ報告し、適切な創管理材/止血・鎮痛を検討。'; } el.innerHTML=`<h3>ISTAP分類: 型${v}</h3><div class="alert ${v==='3'?'alert-danger':(v==='2'?'alert-warning':'alert-info')}">${plan}</div><small>参考分類。臨床判断と施設手順を優先。</small>`; el.style.display='block'; } }
+
+// -------- PAINAD --------
+class PAINADTool extends BaseTool {
+  constructor(){ super('painad','PAINAD（認知症向け疼痛評価）','呼吸/発声/表情/身体言語/なだめの5項目（各0-2点）で評価。'); }
+  getIcon(){ return 'fas fa-head-side-cough'; }
+  renderContent(){
+    const opt=(id,opts)=>`<div class=\"form-group\"><label for=\"${id}\">${id}</label><select id=\"${id}\">${opts}</select></div>`;
+    const o=(arr)=>arr.map((t,i)=>`<option value=\"${i}\">${i}: ${t}</option>`).join('');
+    return `
+      <div class="assessment-section">
+        <div class="form-row">
+          ${opt('呼吸',o(['正常','やや不規則/ため息','喘鳴/うめき/過呼吸']))}
+          ${opt('発声',o(['なし','時折のうめき/うなる','持続/頻回のうめき/叫び']))}
+          ${opt('表情',o(['笑顔/穏やか','しかめ面/緊張','苦痛/しかめ面が持続']))}
+        </div>
+        <div class="form-row">
+          ${opt('身体言語',o(['リラックス','落ち着きがない/身じろぎ','防御/硬直/攻撃的']))}
+          ${opt('なだめ',o(['不要','時に必要','頻繁/持続的に必要']))}
+        </div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="painadResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new PAINADCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>inst.calculate(); el.reset=()=>inst.reset(); return s; }
+}
+class PAINADCalculator { calculate(){ const ids=['呼吸','発声','表情','身体言語','なだめ']; const total = ids.reduce((a,id)=> a + (parseInt(document.getElementById(id)?.value)||0),0); let cat='軽度'; let alert='alert-info'; if(total>=7){cat='重度'; alert='alert-danger';} else if(total>=4){cat='中等度'; alert='alert-warning';} const el=document.getElementById('painadResult'); el.innerHTML=`<h3>PAINAD</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 10（${cat}）</div><div class="alert ${alert}">鎮痛介入の検討と非薬物的ケア、再評価の計画。</div>`; el.style.display='block'; } reset(){ ['呼吸','発声','表情','身体言語','なだめ'].forEach(id=>{ const e=document.getElementById(id); if(e) e.selectedIndex=0; }); const r=document.getElementById('painadResult'); if(r) r.style.display='none'; } }
+
+// -------- Abbey Pain Scale --------
+class AbbeyPainTool extends BaseTool {
+  constructor(){ super('abbeypain','Abbey Pain Scale','6領域（各0-3点）で非言語的疼痛を評価します。'); }
+  getIcon(){ return 'fas fa-hand-holding-medical'; }
+  renderContent(){
+    const opt=(id)=>`<div class=\"form-group\"><label for=\"${id}\">${id}</label><select id=\"${id}\"><option value=\"0\">0: なし</option><option value=\"1\">1: 軽度</option><option value=\"2\">2: 中等度</option><option value=\"3\">3: 高度</option></select></div>`;
+    return `
+      <div class="assessment-section">
+        <div class="form-row">
+          ${opt('表情の変化')}
+          ${opt('声の変化')}
+          ${opt('身体言語の変化')}
+        </div>
+        <div class="form-row">
+          ${opt('ふるまいの変化')}
+          ${opt('生理学的変化')}
+          ${opt('身体的変化')}
+        </div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="abbeyResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new AbbeyPainCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>inst.calculate(); el.reset=()=>inst.reset(); return s; }
+}
+class AbbeyPainCalculator { calculate(){ const ids=['表情の変化','声の変化','身体言語の変化','ふるまいの変化','生理学的変化','身体的変化']; const total=ids.reduce((a,id)=> a + (parseInt(document.getElementById(id)?.value)||0),0); let cat='疼痛なし'; let alert='alert-success'; if(total>=14){cat='きわめて強い疼痛'; alert='alert-danger';} else if(total>=8){cat='強い疼痛'; alert='alert-warning';} else if(total>=4){cat='中等度の疼痛'; alert='alert-info';} const el=document.getElementById('abbeyResult'); el.innerHTML=`<h3>Abbey Pain Scale</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 18（${cat}）</div><div class="alert ${alert}">鎮痛薬の調整や非薬物的介入、一定時間後の再評価を。</div>`; el.style.display='block'; } reset(){ ['表情の変化','声の変化','身体言語の変化','ふるまいの変化','生理学的変化','身体的変化'].forEach(id=>{ const e=document.getElementById(id); if(e) e.selectedIndex=0; }); const r=document.getElementById('abbeyResult'); if(r) r.style.display='none'; } }
