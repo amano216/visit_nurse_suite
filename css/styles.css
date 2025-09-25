@@ -694,25 +694,25 @@ body {
     }
 }
 
-/* Custom Checkbox Styles */
-.form-group input[type="checkbox"] {
-    display: none; /* Hide original checkbox */
-}
+/* Custom Checkbox Styles (robust: supports input+label and label>input) */
+.form-group input[type="checkbox"] { display: none; }
 
-.form-group label {
-    font-weight: normal;
-}
-
-.form-group input[type="checkbox"] + label {
+/* Apply checkbox label styling only to checkbox labels */
+.form-group input[type="checkbox"] + label,
+.form-group label:has(input[type="checkbox"]) {
     position: relative;
     padding-left: 35px;
     cursor: pointer;
     user-select: none;
     display: inline-block;
     line-height: 25px;
+    font-weight: 500; /* 他のラベルに影響させない */
+    margin-bottom: 0;
 }
 
-.form-group input[type="checkbox"] + label::before {
+/* Box */
+.form-group input[type="checkbox"] + label::before,
+.form-group label:has(input[type="checkbox"])::before {
     content: '';
     position: absolute;
     left: 0;
@@ -725,12 +725,9 @@ body {
     transition: all 0.2s ease;
 }
 
-.form-group input[type="checkbox"]:checked + label::before {
-    background: #3498db;
-    border-color: #3498db;
-}
-
-.form-group input[type="checkbox"] + label::after {
+/* Check (hidden by default) */
+.form-group input[type="checkbox"] + label::after,
+.form-group label:has(input[type="checkbox"])::after {
     content: '';
     position: absolute;
     left: 8px;
@@ -744,6 +741,31 @@ body {
     transition: opacity 0.2s ease;
 }
 
-.form-group input[type="checkbox"]:checked + label::after {
+/* Checked state */
+.form-group input[type="checkbox"]:checked + label::before,
+.form-group label:has(input[type="checkbox"]:checked)::before {
+    background: #3498db;
+    border-color: #3498db;
+}
+
+.form-group input[type="checkbox"]:checked + label::after,
+.form-group label:has(input[type="checkbox"]:checked)::after {
     opacity: 1;
+}
+
+/* Keyboard focus visible ring */
+.form-group input[type="checkbox"]:focus-visible + label::before,
+.form-group label:has(input[type="checkbox"]:focus-visible)::before {
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.35);
+}
+
+/* Hover affordance */
+.form-group input[type="checkbox"] + label:hover::before,
+.form-group label:has(input[type="checkbox"]):hover::before {
+    border-color: #3498db;
+}
+
+/* Dense lists spacing */
+.form-group + .form-group {
+    margin-top: 10px;
 }
