@@ -371,7 +371,11 @@ class SearchManager {
             { name: 'beers', title: 'Beers Criteria（参考）', keywords: ['Beers', '高齢者', '不適切処方', 'ガイドライン'], icon: 'fas fa-book-medical' },
             { name: 'stopbang', title: 'STOP-Bang（OSA）', keywords: ['無呼吸', '睡眠', 'いびき', 'STOP-Bang', 'OSA'], icon: 'fas fa-moon' },
             { name: 'acp', title: 'DNAR/ACP支援', keywords: ['DNAR', 'ACP', '意思決定', 'Advance Care Planning', 'ポリシー'], icon: 'fas fa-file-signature' },
-            { name: 'moca', title: 'MoCA認知評価', keywords: ['moca', 'mci', '認知', '軽度認知障害', 'montreal', 'モカ'], icon: 'fas fa-brain' }
+            { name: 'moca', title: 'MoCA認知評価', keywords: ['moca', 'mci', '認知', '軽度認知障害', 'montreal', 'モカ'], icon: 'fas fa-brain' },
+            // 追加: Zarit-8 / OHAT-J / SAS
+            { name: 'zarit8', title: 'Zarit-8（介護負担）', keywords: ['介護者','負担','zarit','家族','レスパイト'], icon: 'fas fa-users' },
+            { name: 'ohatj', title: 'OHAT-J（口腔評価）', keywords: ['口腔','歯科','ohat','オーラル','義歯','口腔ケア'], icon: 'fas fa-tooth' },
+            { name: 'sas', title: 'SAS（身体活動能力早見）', keywords: ['運動','活動','mets','手術前','体力','耐久'], icon: 'fas fa-person-running' }
         ];
     }
 
@@ -562,7 +566,11 @@ class ToolFactory {
             'beers': () => new BeersTool(),
             'stopbang': () => new STOPBangTool(),
             'acp': () => new ACPTool(),
-            'moca': () => new MoCATool()
+            'moca': () => new MoCATool(),
+            // 追加: Zarit-8 / OHAT-J / SAS
+            'zarit8': () => new Zarit8Tool(),
+            'ohatj': () => new OHATJTool(),
+            'sas': () => new SASTool(),
         };
 
         const toolCreator = toolMap[toolName];

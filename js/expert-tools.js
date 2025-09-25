@@ -439,6 +439,127 @@ class RASSPALTool extends BaseTool {
 }
 class RASSPALCalculator { calculate(){ const v=parseInt(document.getElementById('rassScore')?.value)||0; const goal=parseInt(document.getElementById('rassGoal')?.value)||-2; const el=document.getElementById('rassResult'); let msg='観察継続'; let alert='alert-success'; if (v>=2) { msg='せん妄/興奮の可能性：原因評価と薬物/非薬物的介入を検討'; alert='alert-warning'; } else if (v<=-4) { msg='深鎮静：呼吸抑制/副作用の監視と減量を検討'; alert='alert-warning'; } const target = (v===goal)? '目標達成' : (v>goal? '鎮静不足' : '過鎮静'); el.innerHTML=`<h3>RASS-PAL</h3><div class="result-item"><strong>現在:</strong> <span class="highlight">${v}</span>（目標: ${goal} → ${target}）</div><div class="alert ${alert}">${msg}</div>`; el.style.display='block'; } }
 
+// -------- Zarit 8（介護負担） --------
+class Zarit8Tool extends BaseTool {
+  constructor(){ super('zarit8','Zarit-8（介護負担）','介護者の負担感を8項目（各0-4点）で評価します。'); }
+  getIcon(){ return 'fas fa-users'; }
+  renderContent(){
+    const items = [
+      '時間が自分の思うように使えない',
+      '介護によるストレスを感じる',
+      '体力的に疲れる',
+      '経済的な負担を感じる',
+      '家族・友人との関係に影響がある',
+      '介護によって健康が損なわれている',
+      '介護を続けられるか不安がある',
+      '介護のために自由が制限されている'
+    ];
+    const opts = '<option value="0">0: まったくない</option><option value="1">1: たまに</option><option value="2">2: ときどき</option><option value="3">3: よくある</option><option value="4">4: ほとんどいつも</option>';
+    return `
+      <div class="assessment-section">
+        <div class="als-grid">
+          ${items.map((t,i)=>`<div class=\"form-group\"><label for=\"z8_${i}\">${i+1}. ${t}</label><select id=\"z8_${i}\">${opts}</select></div>`).join('')}
+        </div>
+        <small>参考目安: 合計が高いほど負担感が強い（0-32点）。</small>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="zarit8Result" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const c=new Zarit8Calculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
+}
+class Zarit8Calculator {
+  calculate(){
+    const total = Array.from({length:8}).reduce((a,_,i)=> a + (parseInt(document.getElementById(`z8_${i}`)?.value)||0), 0);
+    let cat='低負担'; let alert='alert-success';
+    if (total>=21) { cat='高負担'; alert='alert-danger'; }
+    else if (total>=13) { cat='中等度の負担'; alert='alert-warning'; }
+    else if (total>=8) { cat='軽度の負担'; alert='alert-info'; }
+    const el=document.getElementById('zarit8Result');
+    el.innerHTML=`<h3>Zarit-8結果</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 32（${cat}）</div><div class="alert ${alert}">必要に応じて家族支援/レスパイト/社会資源の活用を検討。</div>`;
+    el.style.display='block';
+  }
+  reset(){ Array.from({length:8}).forEach((_,i)=>{ const e=document.getElementById(`z8_${i}`); if(e) e.selectedIndex=0; }); const r=document.getElementById('zarit8Result'); if(r) r.style.display='none'; }
+}
+
+// -------- OHAT-J（口腔健康評価） --------
+class OHATJTool extends BaseTool {
+  constructor(){ super('ohatj','OHAT-J（口腔評価）','8項目（各0-2点）で口腔の健康状態を評価します。'); }
+  getIcon(){ return 'fas fa-tooth'; }
+  renderContent(){
+    const items = [
+      '唇', '舌', '歯肉・口腔粘膜', '唾液', '残存歯', '義歯', '口腔清掃', '歯痛/不快感'
+    ];
+    const opts = '<option value="0">0: 正常</option><option value="1">1: 変化あり</option><option value="2">2: 問題あり</option>';
+    return `
+      <div class="assessment-section">
+        <div class="als-grid">
+          ${items.map((t,i)=>`<div class=\"form-group\"><label for=\"oh${i}\">${i+1}. ${t}</label><select id=\"oh${i}\">${opts}</select></div>`).join('')}
+        </div>
+        <small>合計0-16点。目安: 0-2 良好 / 3-5 軽度変化 / 6以上 受診・介入検討</small>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="ohatjResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const c=new OHATJCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
+}
+class OHATJCalculator {
+  calculate(){
+    const total = Array.from({length:8}).reduce((a,_,i)=> a + (parseInt(document.getElementById(`oh${i}`)?.value)||0), 0);
+    let cat='良好'; let alert='alert-success';
+    if (total>=6) { cat='要介入/受診検討'; alert='alert-danger'; }
+    else if (total>=3) { cat='軽度の変化あり'; alert='alert-warning'; }
+    const el=document.getElementById('ohatjResult');
+    el.innerHTML=`<h3>OHAT-J結果</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 16（${cat}）</div><div class="alert ${alert}">口腔ケア・義歯調整・歯科受診の検討。</div>`;
+    el.style.display='block';
+  }
+  reset(){ Array.from({length:8}).forEach((_,i)=>{ const e=document.getElementById(`oh${i}`); if(e) e.selectedIndex=0; }); const r=document.getElementById('ohatjResult'); if(r) r.style.display='none'; }
+}
+
+// -------- SAS（身体活動能力早見表） --------
+class SASTool extends BaseTool {
+  constructor(){ super('sas','SAS（身体活動能力）','できる活動から推定METsを算出し、身体活動能力を簡易分類します。'); }
+  getIcon(){ return 'fas fa-person-running'; }
+  renderContent(){
+    const activities = [
+      {id:'sas1', label:'身の回りの用事（食事・更衣・室内歩行）', mets:2.0},
+      {id:'sas2', label:'ゆっくり歩く（4km/h未満）、食器洗い', mets:2.5},
+      {id:'sas3', label:'階段を1-2階上がる、平地を早歩き（約5km/h）', mets:4.0},
+      {id:'sas4', label:'軽い掃除や買い物での早歩き（負荷のある持ち運び）', mets:5.0},
+      {id:'sas5', label:'軽いジョギング（ゆっくり）または坂道歩行', mets:7.0}
+    ];
+    return `
+      <div class="assessment-section">
+        <div class="als-grid">
+          ${activities.map(a=>`<div class=\"form-group\"><label><input type=\"radio\" name=\"sasAct\" value=\"${a.mets}\"> ${a.label}（約${a.mets} METs）</label></div>`).join('')}
+        </div>
+        <small>最も高いレベルで「無理なく可能」な活動を選択してください。</small>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">推定</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="sasResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const c=new SASCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
+}
+class SASCalculator {
+  calculate(){
+    const sel = document.querySelector('input[name="sasAct"]:checked');
+    if (!sel) { const el=document.getElementById('sasResult'); if(el){ el.innerHTML='<div class="alert alert-danger">活動レベルを選択してください。</div>'; el.style.display='block'; } return; }
+    const mets = parseFloat(sel.value)||0;
+    let cat='低（<4 METs）'; let alert='alert-warning';
+    if (mets>=7) { cat='高（≥7 METs）'; alert='alert-success'; }
+    else if (mets>=4) { cat='中（4–6 METs）'; alert='alert-info'; }
+    const el=document.getElementById('sasResult');
+    el.innerHTML=`<h3>SAS推定</h3><div class="result-item"><strong>推定METs:</strong> <span class="highlight">${mets.toFixed(1)}</span></div><div class="alert ${alert}">身体活動能力: ${cat}。治療/リハや手術前評価の参考に。</div>`;
+    el.style.display='block';
+  }
+  reset(){ const rads=[...document.querySelectorAll('input[name="sasAct"]')]; rads.forEach(r=> r.checked=false); const el=document.getElementById('sasResult'); if(el) el.style.display='none'; }
+}
+
 // -------- CAM（Confusion Assessment Method） --------
 class CAMTool extends BaseTool {
   constructor(){ super('cam','CAM（せん妄評価）','急性発症/変動、注意障害、思考のまとまりのなさ、意識レベルの変化で診断します。'); }
