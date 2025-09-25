@@ -769,3 +769,15 @@ body {
 .form-group + .form-group {
     margin-top: 10px;
 }
+
+/* Print-friendly styles and result action buttons */
+@media print {
+    header, nav, .menu-toggle, .search-container, .footer { display: none !important; }
+    .main-content { margin: 0; padding: 0; }
+    .tool-section { box-shadow: none; border: none; }
+    .result-container { background: none; border: none; padding: 0; }
+    .result-item { box-shadow: none; border: 1px solid #ccc; }
+}
+
+.result-actions { display:flex; gap:8px; margin:8px 0 0; }
+.result-actions .btn-sm { padding:6px 10px; font-size:12px; }

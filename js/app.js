@@ -97,7 +97,73 @@ class BaseTool {
             <p class="tool-description">${this.description}</p>
             ${this.renderContent()}
         `;
+        // 入力の自動保存/復元
+        this.restoreForm(section);
+        this.bindAutosave(section);
+        // 共通: 結果コピー/印刷ハンドラ（各ツールの結果DOMが存在すれば動作）
+        setTimeout(() => {
+            const result = section.querySelector('.result-container');
+            if (result && !result.dataset.actionsBound) {
+                const actions = document.createElement('div');
+                actions.className = 'result-actions';
+                actions.innerHTML = `
+                    <button class="btn btn-sm" type="button">コピー</button>
+                    <button class="btn btn-sm btn-secondary" type="button">印刷</button>
+                `;
+                result.insertAdjacentElement('afterend', actions);
+                const [copyBtn, printBtn] = actions.querySelectorAll('button');
+                copyBtn.addEventListener('click', () => {
+                    const text = result.innerText.trim();
+                    if (navigator.clipboard && text) {
+                        navigator.clipboard.writeText(text);
+                    }
+                });
+                printBtn.addEventListener('click', () => window.print());
+                result.dataset.actionsBound = '1';
+            }
+        }, 0);
         return section;
+    }
+
+    storageKey() {
+        return `vns:tool:${this.name}:form`;
+    }
+
+    restoreForm(section) {
+        try {
+            const saved = localStorage.getItem(this.storageKey());
+            if (!saved) return;
+            const obj = JSON.parse(saved);
+            section.querySelectorAll('input, select, textarea').forEach(el => {
+                if (!(el instanceof HTMLElement)) return;
+                const id = el.id || el.name;
+                if (!id || !(id in obj)) return;
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    el.checked = !!obj[id];
+                } else {
+                    el.value = obj[id];
+                }
+            });
+        } catch {}
+    }
+
+    bindAutosave(section) {
+        const handler = () => {
+            const data = {};
+            section.querySelectorAll('input, select, textarea').forEach(el => {
+                if (!(el instanceof HTMLElement)) return;
+                const id = el.id || el.name;
+                if (!id) return;
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    data[id] = el.checked;
+                } else {
+                    data[id] = el.value;
+                }
+            });
+            try { localStorage.setItem(this.storageKey(), JSON.stringify(data)); } catch {}
+        };
+        section.addEventListener('change', handler, true);
+        section.addEventListener('input', handler, true);
     }
 
     renderContent() {
