@@ -459,8 +459,9 @@ class SearchManager {
             // 共同目標と在宅/社会資源
             { name: 'gas', title: 'GAS（Goal Attainment Scaling）', keywords: ['GAS','ゴール','目標','達成度','Tスコア','共同','エンパワメント'], icon: 'fas fa-bullseye' },
             { name: 'homeenv', title: '在宅環境チェックリスト', keywords: ['在宅','環境','転倒','バリアフリー','衛生','緊急','防災','福祉用具'], icon: 'fas fa-house-chimney' },
-            { name: 'socnet', title: 'ソーシャルネットワーク・マッピング', keywords: ['社会資源','家族','近隣','ボランティア','緊急連絡','関係図','連絡網'], icon: 'fas fa-project-diagram' }
-            ,{ name: 'zrhome', title: 'ZR-HOME（在宅環境Q/D）', keywords: ['在宅','環境','ZR-HOME','スクリーニング','詳細','段差','浴室','階段','照明','配線','警報','緊急','本人要因'], icon: 'fas fa-house-circle-check' }
+            { name: 'socnet', title: 'ソーシャルネットワーク・マッピング', keywords: ['社会資源','家族','近隣','ボランティア','緊急連絡','関係図','連絡網'], icon: 'fas fa-project-diagram' },
+            { name: 'zrhome', title: 'ZR-HOME（在宅環境Q/D）', keywords: ['在宅','環境','ZR-HOME','スクリーニング','詳細','段差','浴室','階段','照明','配線','警報','緊急','本人要因'], icon: 'fas fa-house-circle-check' },
+            { name: 'snalite', title: 'SNA-Lite（ネットワーク3分）', keywords: ['SNA','ネットワーク','支援','社会資源','即応','代替','近接','多様性','結節点依存','空白領域','レーダー'], icon: 'fas fa-network-wired' }
         ];
     }
 
@@ -676,6 +677,7 @@ class ToolFactory {
             'homeenv': () => new HomeEnvTool(),
             'socnet': () => new SocialNetworkTool(),
             'zrhome': () => new ZRHomeTool(),
+            'snalite': () => new SNALiteTool(),
         };
 
         const toolCreator = toolMap[toolName];
