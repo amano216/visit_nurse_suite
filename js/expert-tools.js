@@ -1333,6 +1333,105 @@ class DripRateCalculator {
   reset(){ ['dripVolume','dripHours','dripMinutes','dripMlh','dripSecPerDrop'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const r=document.getElementById('dripResult'); if(r) r.style.display='none'; }
 }
 
+// -------- STAS-J（医療者評価） --------
+class STASJTool extends BaseTool {
+  constructor(){ super('stasj','STAS-J（医療者評価）','緩和ケア介入の成果を医療者視点で評価（0=問題なし～4=極めて重い）。'); }
+  getIcon(){ return 'fas fa-people-group'; }
+  renderContent(){
+    const items=[
+      '痛み','他の身体症状','患者の不安','家族の不安','患者の情報理解','家族の情報理解','コミュニケーション','患者の介護負担','家族の介護負担','霊的/実存的苦痛'
+    ];
+    const options = Array.from({length:5}).map((_,v)=>`<option value="${v}">${v}</option>`).join('');
+    const rows = items.map((label,i)=>`
+      <div class="form-group"><label for="stas_${i}">${label}</label><select id="stas_${i}">${options}</select></div>
+    `).join('');
+    return `
+      <div class="assessment-section">
+        <h4><i class="fas fa-list-check"></i> 評価（0=問題なし ～ 4=極めて重い）</h4>
+        <div class="form-row">${rows}</div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calc()">集計</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="stasjResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>
+    `;
+  }
+  render(){ const s=super.render(); const c=new STASJCalculator(); const el=s.querySelector('.calculator-instance'); el.calc=()=>c.calc(); el.reset=()=>c.reset(); return s; }
+}
+class STASJCalculator {
+  calc(){
+    const labels=['痛み','他の身体症状','患者の不安','家族の不安','患者の情報理解','家族の情報理解','コミュニケーション','患者の介護負担','家族の介護負担','霊的/実存的苦痛'];
+    const scores = labels.map((_,i)=> parseInt(document.getElementById(`stas_${i}`)?.value)||0);
+    const total = scores.reduce((a,b)=>a+b,0);
+    const avg = total / scores.length;
+    const high = scores.map((v,i)=>({v,i})).filter(x=>x.v>=3).map(x=>labels[x.i]);
+    const riskClass = total>=25? 'alert-danger' : (total>=15? 'alert-warning' : 'alert-info');
+    const el=document.getElementById('stasjResult'); if(!el) return;
+    el.innerHTML = `
+      <h3>STAS-J 集計</h3>
+      <div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 40（平均 ${avg.toFixed(1)}）</div>
+      ${high.length? `<div class="alert ${riskClass}"><strong>高負担項目:</strong> ${high.join('、')}</div>` : `<div class="alert ${riskClass}">全般の負担レベル: ${avg.toFixed(1)}</div>`}
+    `;
+    el.style.display='block';
+  }
+  reset(){
+    for(let i=0;i<10;i++){ const e=document.getElementById(`stas_${i}`); if(e) e.value='0'; }
+    const r=document.getElementById('stasjResult'); if(r) r.style.display='none';
+  }
+}
+
+// -------- IPOS（患者/医療者） --------
+class IPOSTool extends BaseTool {
+  constructor(){ super('ipos','IPOS（患者/医療者）','3–7日の短期変化に着目し、症状・心理・社会・スピリチュアルを包括評価。'); }
+  getIcon(){ return 'fas fa-user-injured'; }
+  renderContent(){
+    const items=['痛み','息苦しさ','吐き気','食欲不振','便通の問題','疲労/倦怠','不安','気分の落ち込み','情報への満足','家族/介護者の不安','スピリチュアルな安寧'];
+    const options = Array.from({length:5}).map((_,v)=>`<option value="${v}">${v}</option>`).join('');
+    const rows = items.map((label,i)=>`
+      <div class="form-group"><label for="ipos_${i}">${label}</label><select id="ipos_${i}">${options}</select></div>
+    `).join('');
+    return `
+      <div class="assessment-section">
+        <div class="form-row">
+          <div class="form-group"><label for="iposMode">評価者</label>
+            <select id="iposMode"><option value="patient">患者（自己評価）</option><option value="clinician">医療者</option></select>
+          </div>
+          <div class="form-group"><small>0=問題なし/満足、4=非常に強い問題/不満（項目により意味は反転しない前提の簡易版）</small></div>
+        </div>
+        <div class="form-row">${rows}</div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calc()">集計</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="iposResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>
+    `;
+  }
+  render(){ const s=super.render(); const c=new IPOSCalculator(); const el=s.querySelector('.calculator-instance'); el.calc=()=>c.calc(); el.reset=()=>c.reset(); return s; }
+}
+class IPOSCalculator {
+  calc(){
+    const labels=['痛み','息苦しさ','吐き気','食欲不振','便通の問題','疲労/倦怠','不安','気分の落ち込み','情報への満足','家族/介護者の不安','スピリチュアルな安寧'];
+    const scores = labels.map((_,i)=> parseInt(document.getElementById(`ipos_${i}`)?.value)||0);
+    const total = scores.reduce((a,b)=>a+b,0);
+    const avg = total / scores.length;
+    const high = scores.map((v,i)=>({v,i})).filter(x=>x.v>=3).map(x=>labels[x.i]);
+    const mode = document.getElementById('iposMode')?.value||'patient';
+    const tag = mode==='patient' ? '患者自己評価' : '医療者評価';
+    const riskClass = total>=22? 'alert-danger' : (total>=12? 'alert-warning' : 'alert-info');
+    const el=document.getElementById('iposResult'); if(!el) return;
+    el.innerHTML = `
+      <h3>IPOS 集計（${tag}）</h3>
+      <div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 44（平均 ${avg.toFixed(1)}）</div>
+      ${high.length? `<div class="alert ${riskClass}"><strong>高負担項目:</strong> ${high.join('、')}</div>` : `<div class="alert ${riskClass}">全般の負担レベル: ${avg.toFixed(1)}</div>`}
+    `;
+    el.style.display='block';
+  }
+  reset(){
+    for(let i=0;i<11;i++){ const e=document.getElementById(`ipos_${i}`); if(e) e.value='0'; }
+    const r=document.getElementById('iposResult'); if(r) r.style.display='none';
+  }
+}
+
 // -------- オピオイド等価換算（OME/BT） --------
 class OpioidEquivalenceTool extends BaseTool {
   constructor(){ super('ome','オピオイド等価換算（OME/BT）','日常用量から経口モルヒネ換算量（OME）とブレイクスルー量（10%目安）を算出します。'); }
@@ -1447,6 +1546,204 @@ class OpioidEquivalenceCalculator {
     el.style.display='block';
   }
   reset(){ ['omeDose'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const s1=document.getElementById('omeDrug'); if(s1) s1.selectedIndex=0; const s2=document.getElementById('omeRescue'); if(s2) s2.selectedIndex=0; const p=document.getElementById('omeBtPct'); if(p) p.value=10; const r=document.getElementById('omeResult'); if(r) r.style.display='none'; }
+}
+
+// -------- GAS（Goal Attainment Scaling） --------
+class GASTool extends BaseTool {
+  constructor(){ super('gas','GAS（Goal Attainment Scaling）','個別目標の達成度を-2～+2で評価し、合算（Tスコア）で客観化。'); }
+  getIcon(){ return 'fas fa-bullseye'; }
+  renderContent(){
+    return `
+      <div class="form-group">
+        <button class="btn btn-secondary" type="button" onclick="this.parentElement.parentElement.querySelector('.calculator-instance').addRow()"><i class="fas fa-plus"></i> 目標を追加</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table" id="gasTable">
+          <thead><tr><th>目標</th><th>重み</th><th>達成度</th><th>操作</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="alert alert-info">達成度の定義: +2 期待をはるかに超える / +1 期待を上回る / 0 期待通り / -1 期待を下回る / -2 はるかに下回る</div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calc()">集計</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="gasResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>
+    `;
+  }
+  render(){ const s=super.render(); const c=new GASCalculator(); const el=s.querySelector('.calculator-instance'); el.addRow=()=>c.addRow(); el.calc=()=>c.calc(); el.reset=()=>c.reset(); // 初期行
+    c.addRow('例: 1日1回は椅子から自力で立ち上がる',1,0);
+    return s; }
+}
+class GASCalculator {
+  rowTemplate(goal='',w=1,score=0){
+    const options=[-2,-1,0,1,2].map(v=>`<option value="${v}" ${v===score?'selected':''}>${v}</option>`).join('');
+    return `<tr>
+      <td><input type="text" class="input" placeholder="目標を記入" value="${goal}"></td>
+      <td><input type="number" class="input" min="0" step="0.1" value="${w}"></td>
+      <td><select class="input">${options}</select></td>
+      <td><button class="btn btn-sm btn-danger" type="button">削除</button></td>
+    </tr>`;
+  }
+  addRow(goal='',w=1,score=0){
+    const tbody=document.querySelector('#gasTable tbody'); if(!tbody) return;
+    const temp=document.createElement('tbody'); temp.innerHTML=this.rowTemplate(goal,w,score); const tr=temp.firstElementChild;
+    tr.querySelector('button').addEventListener('click',()=>tr.remove());
+    tbody.appendChild(tr);
+  }
+  calc(){
+    const tbody=document.querySelector('#gasTable tbody'); if(!tbody) return;
+    const rows=[...tbody.querySelectorAll('tr')];
+    if(rows.length===0){ this.addRow(); return; }
+    let sumWX=0, sumW2=0; const details=[];
+    rows.forEach(tr=>{
+      const goal=tr.cells[0].querySelector('input')?.value?.trim()||'(未記入)';
+      const w=parseFloat(tr.cells[1].querySelector('input')?.value)||0;
+      const x=parseInt(tr.cells[2].querySelector('select')?.value)||0;
+      sumWX += w * x; sumW2 += w * w; details.push({goal,w,x});
+    });
+    const tscore = sumW2>0 ? 50 + (10 * sumWX) / Math.sqrt(sumW2) : 50;
+    const el=document.getElementById('gasResult'); if(!el) return;
+    const high = details.filter(d=>d.x<=-1 || d.w>=2);
+    el.innerHTML = `
+      <h3>GAS 集計</h3>
+      <div class="result-item"><strong>Σ(w×x):</strong> ${sumWX.toFixed(2)}</div>
+      <div class="result-item"><strong>Tスコア:</strong> <span class="highlight">${tscore.toFixed(1)}</span>（50で期待どおり、>50で期待超過）</div>
+      ${high.length? `<div class="alert alert-warning"><strong>重点フォロー:</strong> ${high.map(h=>`${h.goal}（w${h.w}, x${h.x}）`).join('、')}</div>`: ''}
+    `;
+    el.style.display='block';
+  }
+  reset(){ const tbody=document.querySelector('#gasTable tbody'); if(tbody){ tbody.innerHTML=''; } const r=document.getElementById('gasResult'); if(r) r.style.display='none'; }
+}
+
+// -------- 在宅環境チェックリスト --------
+class HomeEnvTool extends BaseTool {
+  constructor(){ super('homeenv','在宅環境チェックリスト','転倒・バリアフリー・衛生・緊急対応などを3段階で評価（0良好/1改善/2危険）。'); }
+  getIcon(){ return 'fas fa-house-chimney'; }
+  renderContent(){
+    const items=[
+      {cat:'転倒',label:'玄関・通路の段差がある',tip:'段差解消スロープ・手すり設置を検討'},
+      {cat:'転倒',label:'夜間照明が不十分',tip:'ナイトライトの設置'},
+      {cat:'転倒',label:'浴室/トイレに手すりがない',tip:'L型手すりや立ち座り支援具'},
+      {cat:'転倒',label:'床が滑りやすい/散乱物が多い',tip:'ノンスリップマット/動線の整理'},
+      {cat:'転倒',label:'敷物・コードの固定なし',tip:'コードの結束/滑り止めシート'},
+      {cat:'バリア',label:'出入口や通路の幅が車いすに不十分',tip:'家具配置の見直し'},
+      {cat:'バリア',label:'ベッド/トイレ高さが不適合',tip:'高さ調整/置台'},
+      {cat:'衛生',label:'換気不良・カビ/害虫の問題',tip:'換気・清掃/専門業者相談'},
+      {cat:'安全',label:'火災/ガス/CO警報器未設置',tip:'警報器の設置・点検'},
+      {cat:'安全',label:'緊急連絡先の掲示がない',tip:'目につく場所へ掲示/家族連絡網'},
+      {cat:'備え',label:'救急セットや常備薬が整っていない',tip:'救急箱整備/リスト更新'},
+      {cat:'防災',label:'家具の固定・転倒防止が不十分',tip:'耐震固定/落下対策'},
+    ];
+    const options = `<option value="0">0 良好</option><option value="1">1 改善</option><option value="2">2 危険</option>`;
+    const rows = items.map((it,i)=>`<tr><td>${it.cat}</td><td>${it.label}</td><td><select id="home_${i}">${options}</select></td></tr>`).join('');
+    return `
+      <div class="table-responsive"><table class="table"><thead><tr><th>カテゴリ</th><th>項目</th><th>評価</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calc()">集計</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="homeEnvResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>
+    `;
+  }
+  render(){ const s=super.render(); const c=new HomeEnvCalculator(); const el=s.querySelector('.calculator-instance'); el.calc=()=>c.calc(); el.reset=()=>c.reset(); return s; }
+}
+class HomeEnvCalculator {
+  calc(){
+    const labels=[
+      ['転倒','玄関・通路の段差がある','段差解消スロープ・手すり設置を検討'],
+      ['転倒','夜間照明が不十分','ナイトライトの設置'],
+      ['転倒','浴室/トイレに手すりがない','L型手すりや立ち座り支援具'],
+      ['転倒','床が滑りやすい/散乱物が多い','ノンスリップマット/動線の整理'],
+      ['転倒','敷物・コードの固定なし','コードの結束/滑り止めシート'],
+      ['バリア','出入口や通路の幅が車いすに不十分','家具配置の見直し'],
+      ['バリア','ベッド/トイレ高さが不適合','高さ調整/置台'],
+      ['衛生','換気不良・カビ/害虫の問題','換気・清掃/専門業者相談'],
+      ['安全','火災/ガス/CO警報器未設置','警報器の設置・点検'],
+      ['安全','緊急連絡先の掲示がない','目につく場所へ掲示/家族連絡網'],
+      ['備え','救急セットや常備薬が整っていない','救急箱整備/リスト更新'],
+      ['防災','家具の固定・転倒防止が不十分','耐震固定/落下対策']
+    ];
+    const scores = labels.map((_,i)=> parseInt(document.getElementById(`home_${i}`)?.value)||0);
+    const total = scores.reduce((a,b)=>a+b,0);
+    const cats = {};
+    labels.forEach((l,i)=>{ cats[l[0]]=(cats[l[0]]||0)+scores[i]; });
+    const highIdx = scores.map((v,i)=> v===2? i : -1).filter(i=>i>=0);
+    const el=document.getElementById('homeEnvResult'); if(!el) return;
+    const riskClass = total>=10? 'alert-danger' : (total>=5? 'alert-warning' : 'alert-info');
+    const catStr = Object.entries(cats).map(([k,v])=>`${k}:${v}`).join(' / ');
+    const tips = highIdx.map(i=>`・${labels[i][1]} → 推奨: ${labels[i][2]}`).join('<br>');
+    el.innerHTML = `
+      <h3>在宅環境 集計</h3>
+      <div class="result-item"><strong>総リスクスコア:</strong> <span class="highlight">${total}</span>（カテゴリ内訳: ${catStr}）</div>
+      ${highIdx.length? `<div class="alert ${riskClass}"><strong>緊急/優先改善:</strong><br>${tips}</div>` : `<div class="alert ${riskClass}">大きな危険は見られません</div>`}
+    `;
+    el.style.display='block';
+  }
+  reset(){ for(let i=0;i<12;i++){ const e=document.getElementById(`home_${i}`); if(e) e.value='0'; } const r=document.getElementById('homeEnvResult'); if(r) r.style.display='none'; }
+}
+
+// -------- ソーシャルネットワーク・マッピング（簡易スコア） --------
+class SocialNetworkTool extends BaseTool {
+  constructor(){ super('socnet','ソーシャルネットワーク・マッピング','関係者を登録し支援力スコアを推定。緊急時対応や空白領域を可視化。'); }
+  getIcon(){ return 'fas fa-project-diagram'; }
+  renderContent(){
+    return `
+      <div class="form-row">
+        <div class="form-group"><label>氏名/関係</label><input type="text" id="sn_name" class="input" placeholder="例: 長男 太郎（家族）"></div>
+        <div class="form-group"><label>距離</label><select id="sn_prox"><option value="cohab">同居</option><option value="near">近所</option><option value="walk">徒歩圏</option><option value="car">車移動</option></select></div>
+        <div class="form-group"><label>連絡頻度/週</label><input type="number" id="sn_freq" class="input" min="0" max="21" value="1"></div>
+        <div class="form-group"><label>信頼度</label><input type="number" id="sn_trust" class="input" min="1" max="5" value="4"></div>
+        <div class="form-group"><label>緊急連絡可</label><select id="sn_emer"><option value="yes">はい</option><option value="no">いいえ</option></select></div>
+      </div>
+      <button class="btn btn-secondary" type="button" onclick="this.parentElement.querySelector('.calculator-instance').addMember()"><i class="fas fa-user-plus"></i> 追加</button>
+      <div id="sn_list" class="list"></div>
+      <hr>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calc()">集計</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="snResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>
+    `;
+  }
+  render(){ const s=super.render(); const c=new SocialNetworkCalculator(); const el=s.querySelector('.calculator-instance'); el.addMember=()=>c.addMember(); el.calc=()=>c.calc(); el.reset=()=>c.reset(); return s; }
+}
+class SocialNetworkCalculator {
+  constructor(){ this.members=[]; }
+  addMember(){
+    const name=document.getElementById('sn_name')?.value?.trim(); if(!name) return;
+    const prox=document.getElementById('sn_prox')?.value||'car';
+    const freq=parseFloat(document.getElementById('sn_freq')?.value)||0;
+    const trust=parseFloat(document.getElementById('sn_trust')?.value)||1;
+    const emer=(document.getElementById('sn_emer')?.value||'no')==='yes';
+    this.members.push({name,prox,freq,trust,emer});
+    this.renderList();
+  }
+  renderList(){
+    const list=document.getElementById('sn_list'); if(!list) return;
+    list.innerHTML = this.members.length? this.members.map((m,i)=>`
+      <div class="chip">
+        <span>${m.name}｜${this.proxLabel(m.prox)}｜頻度${m.freq}/週｜信頼${m.trust}｜緊急${m.emer?'○':'×'}</span>
+        <button class="btn btn-sm btn-danger" type="button" onclick="window.snDel${i}()">削除</button>
+      </div>`).join('') : '<div class="text-muted">未登録</div>';
+    // 削除ハンドラ
+    this.members.forEach((_,i)=>{ window[`snDel${i}`]=()=>{ this.members.splice(i,1); this.renderList(); }; });
+  }
+  proxLabel(p){ return p==='cohab'?'同居':p==='near'?'近所':p==='walk'?'徒歩圏':'車移動'; }
+  proxWeight(p){ return p==='cohab'?1.3:p==='near'?1.2:p==='walk'?1.1:1.0; }
+  calc(){
+    const n=this.members.length; const el=document.getElementById('snResult'); if(!el) return;
+    if(n===0){ el.innerHTML='<div class="alert alert-info">関係者を1名以上追加してください。</div>'; el.style.display='block'; return; }
+    let support=0; let emerCount=0; const byProx={cohab:0,near:0,walk:0,car:0};
+    this.members.forEach(m=>{ const avail = m.emer?1.2:1.0; if(m.emer) emerCount++; byProx[m.prox]++; support += m.trust * (1 + Math.min(m.freq,14)/7) * this.proxWeight(m.prox) * avail; });
+    const gaps=[]; if(byProx.cohab===0 && byProx.near===0) gaps.push('近距離の支援者がいない'); if(emerCount===0) gaps.push('緊急連絡可能者がいない');
+    el.innerHTML = `
+      <h3>ソーシャル支援 集計</h3>
+      <div class="result-item"><strong>登録人数:</strong> ${n} 名</div>
+      <div class="result-item"><strong>推定支援力スコア:</strong> <span class="highlight">${support.toFixed(1)}</span></div>
+      <div class="result-item"><strong>緊急連絡可:</strong> ${emerCount} 名</div>
+      ${gaps.length? `<div class="alert alert-warning"><strong>空白領域:</strong> ${gaps.join('、')}</div>` : '<div class="alert alert-success">支援ネットワークは概ね良好です</div>'}
+    `;
+    el.style.display='block';
+  }
+  reset(){ this.members=[]; this.renderList(); const r=document.getElementById('snResult'); if(r) r.style.display='none'; }
 }
 
 // -------- CPOT（Critical-Care Pain Observation Tool） --------

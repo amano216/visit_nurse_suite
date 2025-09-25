@@ -452,7 +452,14 @@ class SearchManager {
             // 疼痛拡張: OME/BT, CPOT, BPS
             { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','OMED','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算','経口','PO','貼付','パッチ','TD','静注','IV','皮下注','SC'], icon: 'fas fa-scale-balanced' },
             { name: 'cpot', title: 'CPOT（非言語的疼痛）', keywords: ['CPOT','疼痛','表情','筋緊張','体動','人工呼吸器','非言語','評価'], icon: 'fas fa-face-grimace' },
-            { name: 'bps', title: 'BPS（Behavioral Pain Scale）', keywords: ['BPS','疼痛','表情','上肢','人工呼吸器','行動','非言語'], icon: 'fas fa-person' }
+            { name: 'bps', title: 'BPS（Behavioral Pain Scale）', keywords: ['BPS','疼痛','表情','上肢','人工呼吸器','行動','非言語'], icon: 'fas fa-person' },
+            // 緩和アウトカム
+            { name: 'stasj', title: 'STAS-J（医療者評価）', keywords: ['STAS','緩和','アウトカム','症状','家族','霊的','情報','コミュニケーション'], icon: 'fas fa-people-group' },
+            { name: 'ipos', title: 'IPOS（患者/医療者）', keywords: ['IPOS','患者報告','PRO','症状','緩和','満足','スピリチュアル','family'], icon: 'fas fa-user-injured' },
+            // 共同目標と在宅/社会資源
+            { name: 'gas', title: 'GAS（Goal Attainment Scaling）', keywords: ['GAS','ゴール','目標','達成度','Tスコア','共同','エンパワメント'], icon: 'fas fa-bullseye' },
+            { name: 'homeenv', title: '在宅環境チェックリスト', keywords: ['在宅','環境','転倒','バリアフリー','衛生','緊急','防災','福祉用具'], icon: 'fas fa-house-chimney' },
+            { name: 'socnet', title: 'ソーシャルネットワーク・マッピング', keywords: ['社会資源','家族','近隣','ボランティア','緊急連絡','関係図','連絡網'], icon: 'fas fa-project-diagram' }
         ];
     }
 
@@ -660,6 +667,13 @@ class ToolFactory {
             'ome': () => new OpioidEquivalenceTool(),
             'cpot': () => new CPOTTool(),
             'bps': () => new BPSTool(),
+            // 緩和アウトカム
+            'stasj': () => new STASJTool(),
+            'ipos': () => new IPOSTool(),
+            // 共同目標/在宅/社会資源
+            'gas': () => new GASTool(),
+            'homeenv': () => new HomeEnvTool(),
+            'socnet': () => new SocialNetworkTool(),
         };
 
         const toolCreator = toolMap[toolName];
@@ -747,7 +761,6 @@ class NarcoticCalculator {
         const amount = parseFloat(document.getElementById('narcoticAmount')?.value) || 0;
         const saline = parseFloat(document.getElementById('salineVolume')?.value) || 0;
         const targetDose = parseFloat(document.getElementById('targetHourlyDose')?.value) || 0;
-
         if (amount <= 0 || saline <= 0 || targetDose <= 0) {
             this.showError('すべての値を正しく入力してください。');
             return;
