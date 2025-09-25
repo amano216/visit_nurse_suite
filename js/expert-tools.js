@@ -1023,47 +1023,6 @@ class O2TimeCalculator {
 }
 
 // -------- ABCD-Stoma 評価（参考） --------
-class ABCDStomaTool extends BaseTool {
-  constructor(){ super('abcdstoma','ABCD-Stoma評価','装具適合・体表・皮膚状態・位置/動きの4観点からケア提案（参考）。'); }
-  getIcon(){ return 'fas fa-toilet'; }
-  renderContent(){
-    const chk=(id,t)=>`<div class=\"form-group\"><label><input type=\"checkbox\" id=\"${id}\"> ${t}</label></div>`;
-    return `
-      <div class="assessment-section">
-        <h4><i class="fas fa-shield-alt"></i> A: Appliance（装具適合）</h4>
-        ${chk('aLeak','漏れ/周囲の滲出あり')} ${chk('aCut','開口サイズが合っていない')} ${chk('aWear','装具の装着期間が短い（<3日）')}
-        <h4><i class="fas fa-user"></i> B: Body（体表/突出）</h4>
-        ${chk('bFlat','平坦/陥没ストーマ')} ${chk('bCrease','しわ/溝/瘢痕が近接')} ${chk('bFold','腹部の屈曲で浮きやすい')}
-        <h4><i class="fas fa-heart"></i> C: Condition（皮膚状態）</h4>
-        ${chk('cIrr','発赤/びらん/掻痒')} ${chk('cFungal','カンジダ様衛星病変')} ${chk('cTrauma','機械的損傷')}
-        <h4><i class="fas fa-arrows-alt"></i> D: Dynamics（位置/動き）</h4>
-        ${chk('dNear','皺/臍/創部に近接')} ${chk('dSport','活動量が多く剥がれやすい')} ${chk('dSweat','発汗が多い')}
-      </div>
-      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').suggest()">提案を表示</button>
-      <div id="abcdResult" class="result-container" style="display:none"></div>
-      <div class="calculator-instance" style="display:none"></div>`;
-  }
-  render(){ const s=super.render(); const inst=new ABCDStomaHelper(); const el=s.querySelector('.calculator-instance'); el.suggest=()=>inst.suggest(); return s; }
-}
-class ABCDStomaHelper {
-  suggest(){
-    const on=id=> document.getElementById(id)?.checked;
-    const rec=[];
-    if(on('aLeak')||on('aCut')) rec.push('開口サイズの再測定とテンプレート更新、皮膚保護剤の見直し');
-    if(on('aWear')) rec.push('耐久性の高い装具/アクセサリで装着期間を延長（目標3-5日）');
-    if(on('bFlat')) rec.push('コンベックスやベルト、埋め込みリング/ペーストで平坦部を補正');
-    if(on('bCrease')||on('bFold')) rec.push('しわ方向に沿ったカット、パテ充填/フォームリングで隙間を封止');
-    if(on('cIrr')) rec.push('刺激の回避と保護（スキンバリア、皮膚洗浄と乾燥の徹底）');
-    if(on('cFungal')) rec.push('抗真菌パウダーの検討（医師指示のもと）');
-    if(on('cTrauma')) rec.push('剥離時の保護剤/リムーバー使用とテクニック見直し');
-    if(on('dNear')) rec.push('プレカットの形状調整/フレキシブル装具');
-    if(on('dSport')||on('dSweat')) rec.push('固定力強化：ベルト/テープ/周囲保護フィルム、発汗時の貼付タイミング調整');
-    const msg = rec.length? rec.map(s=>`<li>${s}</li>`).join('') : '<li>大きな問題は見当たりません。現行ケアの継続を。</li>';
-    const el=document.getElementById('abcdResult');
-    el.innerHTML=`<h3>ABCD-Stoma 提案</h3><ul>${msg}</ul><small>本結果は参考情報です。個別の臨床判断と自施設手順を優先してください。</small>`;
-    el.style.display='block';
-  }
-}
 
 // -------- Skin Tear（ISTAP分類） --------
 class SkinTearTool extends BaseTool {
@@ -1139,6 +1098,85 @@ class AbbeyPainTool extends BaseTool {
   render(){ const s=super.render(); const inst=new AbbeyPainCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>inst.calculate(); el.reset=()=>inst.reset(); return s; }
 }
 class AbbeyPainCalculator { calculate(){ const ids=['表情の変化','声の変化','身体言語の変化','ふるまいの変化','生理学的変化','身体的変化']; const total=ids.reduce((a,id)=> a + (parseInt(document.getElementById(id)?.value)||0),0); let cat='疼痛なし'; let alert='alert-success'; if(total>=14){cat='きわめて強い疼痛'; alert='alert-danger';} else if(total>=8){cat='強い疼痛'; alert='alert-warning';} else if(total>=4){cat='中等度の疼痛'; alert='alert-info';} const el=document.getElementById('abbeyResult'); el.innerHTML=`<h3>Abbey Pain Scale</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 18（${cat}）</div><div class="alert ${alert}">鎮痛薬の調整や非薬物的介入、一定時間後の再評価を。</div>`; el.style.display='block'; } reset(){ ['表情の変化','声の変化','身体言語の変化','ふるまいの変化','生理学的変化','身体的変化'].forEach(id=>{ const e=document.getElementById(id); if(e) e.selectedIndex=0; }); const r=document.getElementById('abbeyResult'); if(r) r.style.display='none'; } }
+
+// -------- O2投与量⇔FiO2換算 --------
+class O2FiO2Tool extends BaseTool {
+  constructor(){ super('o2fio2','O2投与量⇔FiO2換算','デバイスと流量からFiO2を推定、目標FiO2から推奨流量を逆算します。'); }
+  getIcon(){ return 'fas fa-head-side-mask'; }
+  renderContent(){
+    return `
+      <div class="assessment-section">
+        <h4><i class="fas fa-head-side-mask"></i> デバイスと流量</h4>
+        <div class="form-row">
+          <div class="form-group"><label for="o2dev">デバイス</label>
+            <select id="o2dev">
+              <option value="air">室内空気</option>
+              <option value="nc">鼻カニュラ</option>
+              <option value="sm">シンプルマスク</option>
+              <option value="nrb">リザーバーマスク</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="o2flow">流量 (L/分)</label><input id="o2flow" type="number" step="0.5" min="0" placeholder="例: 2"></div>
+        </div>
+      </div>
+      <div class="assessment-section">
+        <h4><i class="fas fa-bullseye"></i> 目標FiO2（逆算）</h4>
+        <div class="form-row">
+          <div class="form-group"><label for="o2fio2target">目標FiO2 (%)</label><input id="o2fio2target" type="number" min="21" max="100" step="1" placeholder="例: 30"></div>
+          <div class="form-group"><label for="o2dev2">デバイス（逆算）</label>
+            <select id="o2dev2">
+              <option value="nc">鼻カニュラ</option>
+              <option value="sm">シンプルマスク</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calc()">計算</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="o2fio2Result" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>
+    `;
+  }
+  render(){ const s=super.render(); const c=new O2FiO2Calculator(); const el=s.querySelector('.calculator-instance'); el.calc=()=>c.calc(); el.reset=()=>c.reset(); return s; }
+}
+class O2FiO2Calculator {
+  estFiO2(device, flow){
+    if (device==='air') return 0.21;
+    if (device==='nc') return Math.min(0.24 + 0.04*flow, 0.44);
+    if (device==='sm') { if (flow<=0) return NaN; return Math.max(0.4, Math.min(0.6, 0.3 + 0.03*flow)); }
+    if (device==='nrb') return 0.8;
+    return NaN;
+  }
+  invFlowForTarget(device, targetFiO2){
+    const t = targetFiO2/100;
+    if (device==='nc') { if (t<0.24) return 0; if (t>0.44) return 5; return (t-0.24)/0.04; }
+    if (device==='sm') { // 0.4-0.6 ~ 6-10L近似
+      if (t<=0.4) return 6; if (t>=0.6) return 10; return (t-0.3)/0.03; }
+    return NaN;
+  }
+  calc(){
+    const dev=document.getElementById('o2dev')?.value||'air';
+    const flow=parseFloat(document.getElementById('o2flow')?.value)||0;
+    const tgt=parseFloat(document.getElementById('o2fio2target')?.value)||NaN;
+    const dev2=document.getElementById('o2dev2')?.value||'nc';
+    const el=document.getElementById('o2fio2Result'); if(!el) return;
+    const fio2 = this.estFiO2(dev, flow);
+    const recFlow = Number.isFinite(tgt)? this.invFlowForTarget(dev2, tgt) : NaN;
+    if (!Number.isFinite(fio2)) { el.innerHTML='<div class="alert alert-danger">デバイス/流量を正しく入力してください。</div>'; el.style.display='block'; return; }
+    let recText='';
+    if (Number.isFinite(recFlow)) {
+      recText = `<div class="result-item"><strong>目標${dev2}の推奨流量:</strong> <span class="highlight">${recFlow.toFixed(1)}</span> L/分</div>`;
+    }
+    el.innerHTML = `
+      <h3>O2⇔FiO2換算</h3>
+      <div class="result-item"><strong>推定FiO2:</strong> <span class="highlight">${(fio2*100).toFixed(0)}</span>%（${dev}${flow>0?` / ${flow} L/分`:''}）</div>
+      ${recText}
+      <div class="alert ${fio2>=0.4?'alert-warning':'alert-info'}">目安換算です。臨床状況に応じてSpO2・呼吸状態を確認し、必要時は医師と相談してください。</div>
+    `;
+    el.style.display='block';
+  }
+  reset(){ ['o2flow','o2fio2target'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const d=document.getElementById('o2dev'); if(d) d.selectedIndex=0; const d2=document.getElementById('o2dev2'); if(d2) d2.selectedIndex=0; const r=document.getElementById('o2fio2Result'); if(r) r.style.display='none'; }
+}
 
 // -------- オピオイド等価換算（OME/BT） --------
 class OpioidEquivalenceTool extends BaseTool {
@@ -1219,6 +1257,7 @@ class OpioidEquivalenceCalculator {
     const f = (rescueDrug==='oxycodone_po')? this.factors.oxycodone_po : this.factors.morphine_po;
     return omeMg / f;
   }
+  toFentanylMcgPerHour(omeMg){ return omeMg / this.factors.fentanyl_td_per_mcg_h; }
   roundDose(mg){ return Math.round(mg*2)/2; } // 0.5mg丸め
   calculate(){
     const drug = document.getElementById('omeDrug')?.value||'morphine_po';
@@ -1232,12 +1271,22 @@ class OpioidEquivalenceCalculator {
     const btRescue = this.roundDose(this.toRescue(rescue, btOme));
     const drugText = { morphine_po:'モルヒネ（経口）', oxycodone_po:'オキシコドン（経口）', fentanyl_td:'フェンタニル（貼付）' }[drug];
     const rescueText = { morphine_po:'モルヒネ（経口）', oxycodone_po:'オキシコドン（経口）' }[rescue];
+    // 等価換算表（スイッチング）
+    const morEq = this.toRescue('morphine_po', ome); // mg/day
+    const oxyEq = this.toRescue('oxycodone_po', ome); // mg/day
+    const fenEq = this.toFentanylMcgPerHour(ome); // mcg/h
     el.innerHTML = `
       <h3>OME/BT換算結果</h3>
       <div class="result-item"><strong>ベース薬剤/用量:</strong> ${drugText} ${dose} ${drug==='fentanyl_td'?'mcg/h':'mg/日'}</div>
       <div class="result-item"><strong>OME（経口モルヒネ換算）:</strong> <span class="highlight">${ome.toFixed(1)}</span> mg/日</div>
       <div class="result-item"><strong>BT目安 (${pct}%/回):</strong> ${btOme.toFixed(1)} mg OME/回</div>
       <div class="result-item"><strong>換算（${rescueText}）:</strong> <span class="highlight">約 ${btRescue}</span> mg/回</div>
+      <h4 style="margin-top:12px"><i class="fas fa-arrows-rotate"></i> 等価換算（スイッチング）</h4>
+      <div class="table-like">
+        <div>モルヒネ経口</div><div><span class="highlight">${morEq.toFixed(1)}</span> mg/日</div>
+        <div>オキシコドン経口</div><div><span class="highlight">${oxyEq.toFixed(1)}</span> mg/日</div>
+        <div>フェンタニル貼付</div><div><span class="highlight">${fenEq.toFixed(1)}</span> mcg/時</div>
+      </div>
       <div class="alert alert-info">注意：併用薬/腎機能/高齢者/せん妄などで減量が必要な場合があります。臨床状況に応じて調整してください。</div>
     `;
     el.style.display='block';

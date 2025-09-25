@@ -442,12 +442,12 @@ class SearchManager {
             { name: 'zarit8', title: 'Zarit-8（介護負担）', keywords: ['介護者','負担','zarit','家族','レスパイト'], icon: 'fas fa-users' },
             { name: 'ohatj', title: 'OHAT-J（口腔評価）', keywords: ['口腔','歯科','ohat','オーラル','義歯','口腔ケア'], icon: 'fas fa-tooth' },
             { name: 'sas', title: 'SAS（身体活動能力早見）', keywords: ['運動','活動','mets','手術前','体力','耐久'], icon: 'fas fa-person-running' },
-            // 追加: 酸素ボンベ時間 / ABCD-Stoma / SkinTear / PAINAD / AbbeyPain
+            // 追加: 酸素ボンベ時間 / SkinTear / PAINAD / AbbeyPain
             { name: 'o2time', title: '酸素ボンベ残時間', keywords: ['酸素','O2','ボンベ','残量','圧力','流量','時間','在宅酸素','HOT','残圧','残時間','ボンベ時間','継続時間'], icon: 'fas fa-clock' },
-            { name: 'abcdstoma', title: 'ABCD-Stoma評価', keywords: ['ABCD','stoma','ストマ','ストーマ','皮膚','合併症','リーク','ケア'], icon: 'fas fa-toilet' },
             { name: 'skintear', title: 'Skin Tear（ISTAP）', keywords: ['スキンテア','皮膚裂傷','ISTAP','創傷','皮膚'], icon: 'fas fa-band-aid' },
             { name: 'painad', title: 'PAINAD（認知症疼痛）', keywords: ['PAINAD','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-face-frown' },
             { name: 'abbeypain', title: 'Abbey Pain Scale', keywords: ['Abbey','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-clipboard-list' },
+            { name: 'o2fio2', title: 'O2投与量⇔FiO2換算', keywords: ['FiO2','酸素','酸素流量','鼻カニュラ','マスク','在宅酸素','HOT','換算','O2','デバイス'], icon: 'fas fa-head-side-mask' },
             // 疼痛拡張: OME/BT, CPOT, BPS
             { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','OMED','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算','経口','PO','貼付','パッチ','TD','静注','IV','皮下注','SC'], icon: 'fas fa-scale-balanced' },
             { name: 'cpot', title: 'CPOT（非言語的疼痛）', keywords: ['CPOT','疼痛','表情','筋緊張','体動','人工呼吸器','非言語','評価'], icon: 'fas fa-face-grimace' },
@@ -649,10 +649,10 @@ class ToolFactory {
             'sas': () => new SASTool(),
             // 追加: 酸素ボンベ時間 / ABCD-Stoma / SkinTear / PAINAD / AbbeyPain
             'o2time': () => new O2TimeTool(),
-            'abcdstoma': () => new ABCDStomaTool(),
             'skintear': () => new SkinTearTool(),
             'painad': () => new PAINADTool(),
             'abbeypain': () => new AbbeyPainTool(),
+            'o2fio2': () => new O2FiO2Tool(),
             // 疼痛拡張
             'ome': () => new OpioidEquivalenceTool(),
             'cpot': () => new CPOTTool(),
