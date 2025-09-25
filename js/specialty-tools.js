@@ -445,8 +445,9 @@ class RespiratoryCalculator {
     // FiO2推定
     let fio2 = 0.21;
     if (device === 'nc') {
-      // 室内気21% + 1L/分ごとに約4%上昇（上限目安 ~45%）
-      fio2 = Math.min(0.21 + 0.04 * flow, 0.45);
+      // 室内気21% + 1L/分ごとに約4%上昇（上限目安 4L）
+      const f = Math.min(Math.max(flow, 0), 4);
+      fio2 = Math.min(0.21 + 0.04 * f, 0.45);
     } else if (device === 'sm') {
       // 6-10Lを想定して0.4-0.6で近似
       if (flow <= 0) return this.showError('シンプルマスクの流量を入力してください（6-10L目安）。');

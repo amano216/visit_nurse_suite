@@ -1116,7 +1116,7 @@ class O2FiO2Tool extends BaseTool {
               <option value="nrb">リザーバーマスク</option>
             </select>
           </div>
-          <div class="form-group"><label for="o2flow">流量 (L/分)</label><input id="o2flow" type="number" step="0.5" min="0" placeholder="例: 2"><small>鼻カニュラは「室内気21% + 1L/分ごとに約4%上昇」の経験則で推定します（上限目安6L）。</small></div>
+          <div class="form-group"><label for="o2flow">流量 (L/分)</label><input id="o2flow" type="number" step="0.5" min="0" placeholder="例: 2"><small>鼻カニュラは「室内気21% + 1L/分ごとに約4%上昇」の経験則で推定（上限目安4L）。</small></div>
         </div>
       </div>
       <div class="assessment-section">
@@ -1144,8 +1144,10 @@ class O2FiO2Calculator {
     if (device==='air') return 0.21;
     if (device==='nc') {
       if (!flow || flow <= 0) return 0.21;
-      // 経験則: 0.21 + 0.04 × 流量（L/分）、上限およそ45%（6L）
-      return Math.min(0.21 + 0.04*flow, 0.45);
+      // 経験則: 0.21 + 0.04 × 流量（L/分）
+      // 上限: 流量は4Lまで、FiO2は概ね0.37程度
+      const f = Math.min(Math.max(flow, 0), 4);
+      return Math.min(0.21 + 0.04*f, 0.45);
     }
     if (device==='sm') { if (flow<=0) return NaN; return Math.max(0.4, Math.min(0.6, 0.3 + 0.03*flow)); }
     if (device==='nrb') return 0.8;
@@ -1153,7 +1155,13 @@ class O2FiO2Calculator {
   }
   invFlowForTarget(device, targetFiO2){
     const t = targetFiO2/100;
-    if (device==='nc') { if (t<=0.21) return 0; if (t>=0.45) return 6; return (t-0.21)/0.04; }
+    if (device==='nc') {
+      if (t<=0.21) return 0;
+      const maxT = 0.21 + 0.04*4; // 4Lの目安: 0.37
+      if (t>=maxT) return 4;
+      const flow = (t-0.21)/0.04;
+      return Math.min(Math.max(flow, 0), 4);
+    }
     if (device==='sm') { // 0.4-0.6 ~ 6-10L近似
       if (t<=0.4) return 6; if (t>=0.6) return 10; return (t-0.3)/0.03; }
     return NaN;
