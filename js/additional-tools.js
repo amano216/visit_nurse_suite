@@ -1,12 +1,12 @@
 /**
  * 追加の臨床ツール実装
- * MNA、NEWS、PPI、BMI、GCS、MMSEツールの詳細実装
+ * MNA-SF、NEWS、PPI、BMI、GCS、MMSEツールの詳細実装
  */
 
-// MNA栄養評価ツール
+// MNA-SF（短縮版）栄養評価ツール
 class MNATool extends BaseTool {
     constructor() {
-        super('mna', 'MNA栄養評価', '高齢者の栄養状態を評価します。');
+        super('mna', 'MNA-SF（栄養短縮版）', '高齢者の栄養状態を6項目・14点で簡便に評価します。');
     }
 
     getIcon() {
@@ -16,22 +16,22 @@ class MNATool extends BaseTool {
     renderContent() {
         return `
             <div class="alert alert-info">
-                <strong>MNA（Mini Nutritional Assessment）:</strong> 高齢者の栄養状態を評価する標準化されたツールです。
+                <strong>MNA-SF（Mini Nutritional Assessment - Short Form）:</strong> 高齢者の栄養状態を6項目・14点でスクリーニングします。
+                <br>F項目は「BMI」または「下腿周囲長」のどちらかで評価します。
             </div>
-            
-            <h4>A. 人体測定</h4>
+
+            <h4>項目（A–F）</h4>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="bmiMNA">BMI (kg/m²)</label>
-                    <select id="bmiMNA">
-                        <option value="0">BMI < 19</option>
-                        <option value="1">19 ≤ BMI < 21</option>
-                        <option value="2">21 ≤ BMI < 23</option>
-                        <option value="3">BMI ≥ 23</option>
+                    <label for="foodIntakeDecline">A. 食事摂取量の低下</label>
+                    <select id="foodIntakeDecline">
+                        <option value="0">著明に低下</option>
+                        <option value="1">やや低下</option>
+                        <option value="2">変化なし</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="weightLoss">過去3ヶ月の体重減少</label>
+                    <label for="weightLoss">B. 過去3ヶ月の体重減少</label>
                     <select id="weightLoss">
                         <option value="0">3kg以上の減少</option>
                         <option value="1">不明</option>
@@ -41,18 +41,17 @@ class MNATool extends BaseTool {
                 </div>
             </div>
 
-            <h4>B. 全般的評価</h4>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="mobility">移動能力</label>
+                    <label for="mobility">C. 移動能力</label>
                     <select id="mobility">
-                        <option value="0">寝たきりまたは車椅子</option>
-                        <option value="1">家の中は歩行可能</option>
+                        <option value="0">寝たきり/車椅子</option>
+                        <option value="1">起居は可だが外出せず</option>
                         <option value="2">外出可能</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="psychStress">過去3ヶ月の心理的ストレス・急性疾患</label>
+                    <label for="psychStress">D. 過去3ヶ月の心理的ストレス・急性疾患</label>
                     <select id="psychStress">
                         <option value="0">はい</option>
                         <option value="2">いいえ</option>
@@ -62,104 +61,26 @@ class MNATool extends BaseTool {
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="neuroPsych">神経・精神的問題</label>
+                    <label for="neuroPsych">E. 神経・精神的問題</label>
                     <select id="neuroPsych">
                         <option value="0">重度の認知症・うつ</option>
                         <option value="1">軽度の認知症</option>
-                        <option value="2">精神的問題なし</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="bedSores">褥瘡・皮膚潰瘍</label>
-                    <select id="bedSores">
-                        <option value="0">はい</option>
-                        <option value="1">いいえ</option>
-                    </select>
-                </div>
-            </div>
-
-            <h4>C. 食事評価</h4>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="meals">食事回数</label>
-                    <select id="meals">
-                        <option value="0">1日1回</option>
-                        <option value="1">1日2回</option>
-                        <option value="2">1日3回</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="protein">タンパク質摂取</label>
-                    <select id="protein">
-                        <option value="0.0">0-1食品群/日</option>
-                        <option value="0.5">2食品群/日</option>
-                        <option value="1.0">3食品群/日以上</option>
+                        <option value="2">問題なし</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="fruitVeg">果物・野菜摂取</label>
-                    <select id="fruitVeg">
-                        <option value="0">1日2回未満</option>
-                        <option value="1">1日2回以上</option>
-                    </select>
+                    <label for="bmiValue">F. BMI (kg/m²)</label>
+                    <input type="number" id="bmiValue" step="0.1" placeholder="例: 22.4">
+                    <small>未測定の場合は下腿周囲長を入力</small>
                 </div>
                 <div class="form-group">
-                    <label for="fluidIntake">水分摂取量</label>
-                    <select id="fluidIntake">
-                        <option value="0.0">1日3杯未満</option>
-                        <option value="0.5">1日3-5杯</option>
-                        <option value="1.0">1日5杯以上</option>
-                    </select>
+                    <label for="calfCircumferenceValue">F. 下腿周囲長 (cm)</label>
+                    <input type="number" id="calfCircumferenceValue" step="0.1" placeholder="例: 31.5">
+                    <small>31cm以上で3点、31cm未満で0点</small>
                 </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="feedingMode">食事摂取方法</label>
-                    <select id="feedingMode">
-                        <option value="0">重篤な摂食困難</option>
-                        <option value="1">自立しているが困難</option>
-                        <option value="2">摂食に問題なし</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="selfNutrition">栄養状態の自己評価</label>
-                    <select id="selfNutrition">
-                        <option value="0">栄養失調</option>
-                        <option value="1">わからない</option>
-                        <option value="2">栄養問題なし</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="healthComparison">同年代との健康比較</label>
-                    <select id="healthComparison">
-                        <option value="0.0">悪い</option>
-                        <option value="0.5">わからない</option>
-                        <option value="1.0">良い</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="midArmCircumference">上腕周囲長 (cm)</label>
-                    <select id="midArmCircumference">
-                        <option value="0.0">21cm未満</option>
-                        <option value="0.5">21-22cm</option>
-                        <option value="1.0">22cm以上</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="calfCircumference">下腿周囲長 (cm)</label>
-                <select id="calfCircumference">
-                    <option value="0">31cm未満</option>
-                    <option value="1">31cm以上</option>
-                </select>
             </div>
 
             <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
@@ -522,69 +443,84 @@ class MMSETool extends BaseTool {
 // 各ツールの計算クラス実装
 class MNACalculator {
     calculate() {
-        const fields = ['bmiMNA', 'weightLoss', 'mobility', 'psychStress', 'neuroPsych', 'bedSores',
-                       'meals', 'protein', 'fruitVeg', 'fluidIntake', 'feedingMode', 'selfNutrition',
-                       'healthComparison', 'midArmCircumference', 'calfCircumference'];
-        
+        // A–E: select の合計
+        const aeFields = ['foodIntakeDecline', 'weightLoss', 'mobility', 'psychStress', 'neuroPsych'];
         let totalScore = 0;
-        const values = {};
-        
-        fields.forEach(field => {
-            const element = document.getElementById(field);
-            if (element) {
-                const value = parseFloat(element.value) || 0;
-                values[field] = value;
-                totalScore += value;
-            }
+        const detailScores = {};
+
+        aeFields.forEach(field => {
+            const el = document.getElementById(field);
+            const v = parseFloat(el?.value) || 0;
+            detailScores[field] = v;
+            totalScore += v;
         });
 
-        this.displayResult(totalScore, values);
+        // F: BMI または 下腿周囲長
+        const bmi = parseFloat(document.getElementById('bmiValue')?.value) || null;
+        const cc = parseFloat(document.getElementById('calfCircumferenceValue')?.value) || null;
+        let fScore = 0;
+        let fBasis = '';
+        if (bmi && bmi > 0) {
+            // BMIスコアリング: >=23:3, 21-22.9:2, 19-20.9:1, <19:0
+            if (bmi >= 23) fScore = 3;
+            else if (bmi >= 21) fScore = 2;
+            else if (bmi >= 19) fScore = 1;
+            else fScore = 0;
+            fBasis = `BMI ${bmi.toFixed(1)}`;
+        } else if (cc && cc > 0) {
+            // 下腿周囲長: >=31cm:3, <31cm:0
+            fScore = cc >= 31 ? 3 : 0;
+            fBasis = `下腿周囲長 ${cc.toFixed(1)}cm`;
+        } else {
+            fScore = 0;
+            fBasis = 'BMI/下腿周囲長 未入力';
+        }
+
+        detailScores.F = fScore;
+        totalScore += fScore;
+
+        this.displayResult(totalScore, detailScores, { bmi, cc, fBasis });
     }
 
-    displayResult(score, values) {
+    displayResult(score, details, extra) {
         const resultDiv = document.getElementById('mnaResult');
         if (!resultDiv) return;
 
         let category, recommendation, alertClass;
-        if (score >= 24) {
+        if (score >= 12) {
             category = '栄養状態良好';
-            recommendation = '定期的な栄養評価を継続してください。';
+            recommendation = '定期的な観察を継続してください。';
             alertClass = 'alert-success';
-        } else if (score >= 17) {
+        } else if (score >= 8) {
             category = '栄養失調のリスクあり';
-            recommendation = '栄養状態の改善と定期的なモニタリングが必要です。';
+            recommendation = '栄養介入の検討とモニタリングを行ってください。';
             alertClass = 'alert-warning';
         } else {
             category = '栄養失調';
-            recommendation = '積極的な栄養介入が必要です。医師・栄養士との相談をお勧めします。';
+            recommendation = '積極的な栄養介入が必要です。医師・栄養士へ相談してください。';
             alertClass = 'alert-danger';
         }
 
         resultDiv.innerHTML = `
-            <h3>MNA評価結果</h3>
-            <div class="result-item">
-                <strong>総スコア:</strong> <span class="highlight">${score.toFixed(1)}/30点</span>
-            </div>
-            <div class="alert ${alertClass}">
-                <strong>評価:</strong> ${category}<br>
-                <strong>推奨:</strong> ${recommendation}
-            </div>
+            <h3>MNA-SF 評価結果</h3>
+            <div class="result-item"><strong>総スコア:</strong> <span class="highlight">${score}/14点</span></div>
+            <div class="result-item"><strong>A 食事摂取低下:</strong> ${details.foodIntakeDecline ?? 0}点</div>
+            <div class="result-item"><strong>B 体重減少:</strong> ${details.weightLoss ?? 0}点</div>
+            <div class="result-item"><strong>C 移動能力:</strong> ${details.mobility ?? 0}点</div>
+            <div class="result-item"><strong>D ストレス/急性疾患:</strong> ${details.psychStress ?? 0}点</div>
+            <div class="result-item"><strong>E 神経・精神:</strong> ${details.neuroPsych ?? 0}点</div>
+            <div class="result-item"><strong>F 指標:</strong> ${extra.fBasis} → ${details.F}点</div>
+            <div class="alert ${alertClass}"><strong>評価:</strong> ${category}<br><strong>推奨:</strong> ${recommendation}</div>
         `;
         resultDiv.style.display = 'block';
     }
 
     reset() {
-        const fields = ['bmiMNA', 'weightLoss', 'mobility', 'psychStress', 'neuroPsych', 'bedSores',
-                       'meals', 'protein', 'fruitVeg', 'fluidIntake', 'feedingMode', 'selfNutrition',
-                       'healthComparison', 'midArmCircumference', 'calfCircumference'];
-        
-        fields.forEach(field => {
-            const element = document.getElementById(field);
-            if (element) element.selectedIndex = 0;
-        });
-        
-        const resultDiv = document.getElementById('mnaResult');
-        if (resultDiv) resultDiv.style.display = 'none';
+        const selectFields = ['foodIntakeDecline', 'weightLoss', 'mobility', 'psychStress', 'neuroPsych'];
+        selectFields.forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
+        const bmiEl = document.getElementById('bmiValue'); if (bmiEl) bmiEl.value = '';
+        const ccEl = document.getElementById('calfCircumferenceValue'); if (ccEl) ccEl.value = '';
+        const resultDiv = document.getElementById('mnaResult'); if (resultDiv) resultDiv.style.display = 'none';
     }
 }
 

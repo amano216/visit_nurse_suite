@@ -403,7 +403,7 @@ class SearchManager {
             { name: 'cadd', title: 'CADD交換時期計算', keywords: ['cadd', 'ポンプ', '交換', '時期', 'リザーバー', '輸液', 'シリンジ', 'PCA', '持続皮下注'], icon: 'fas fa-syringe' },
             { name: 'narcotic', title: '麻薬投与量計算', keywords: ['麻薬', 'オピオイド', 'モルヒネ', 'オキシコドン', 'フェンタニル', '投与量', '鎮痛', '注射', '配合', '濃度'], icon: 'fas fa-pills' },
             { name: 'harris', title: 'Harris-Benedict式', keywords: ['harris', 'ハリス', '基礎代謝', 'bmr', '栄養', 'カロリー', 'TDEE'], icon: 'fas fa-calculator' },
-            { name: 'mna', title: 'MNA評価', keywords: ['mna', '栄養', '評価', 'アセスメント', '高齢者'], icon: 'fas fa-apple-alt' },
+            { name: 'mna', title: 'MNA-SF（栄養短縮版）', keywords: ['mna','mna-sf','栄養','評価','アセスメント','高齢者','短縮版','スクリーニング'], icon: 'fas fa-apple-alt' },
             { name: 'qsofa', title: 'qSOFA', keywords: ['qsofa', '敗血症', 'sepsis', '重症度', '感染', 'ショック'], icon: 'fas fa-heartbeat' },
             { name: 'news', title: 'NEWS', keywords: ['news', '早期警告', 'スコア', '重症度', 'バイタル'], icon: 'fas fa-exclamation-triangle' },
             { name: 'ppi', title: 'PPI（がん予後指数）', keywords: ['ppi', 'がん', '予後', '指数', 'palliative', '緩和'], icon: 'fas fa-chart-line' },
@@ -557,7 +557,7 @@ class SearchManager {
                 <ul>
                     <li>「CADD」「ポンプ」- CADD交換時期計算</li>
                     <li>「麻薬」「モルヒネ」- 麻薬投与量計算</li>
-                    <li>「栄養」「MNA」- 栄養評価ツール</li>
+                    <li>「栄養」「MNA-SF」- 栄養評価ツール</li>
                     <li>「敗血症」「qSOFA」- 重症度評価</li>
                     <li>「意識」「GCS」- 意識レベル評価</li>
                 </ul>
