@@ -238,7 +238,7 @@ class MUSTTool extends BaseTool {
         <div class="form-group"><label for="mustWeight">現在体重(kg)</label><input type="number" id="mustWeight" step="0.1" min="1"></div>
         <div class="form-group"><label for="mustPrevWeight">3-6ヶ月前体重(kg)</label><input type="number" id="mustPrevWeight" step="0.1" min="1"></div>
       </div>
-      <div class="form-group"><input type="checkbox" id="mustAcute"><label for="mustAcute"> 急性疾患により>5日間の経口摂取不能</label></div>
+      <div class="form-group"><label><input type="checkbox" id="mustAcute"> 急性疾患により>5日間の経口摂取不能</label></div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
       <div id="mustResult" class="result-container" style="display:none"></div>
@@ -342,7 +342,7 @@ class ADROPTTool extends BaseTool {
         <h4><i class="fas fa-tint"></i> 脱水（Dehydration）</h4>
         <div class="form-row">
           <div class="form-group"><label for="adBun">BUN (mg/dL)</label><input type="number" id="adBun" step="0.1" min="0" placeholder="例: 28"></div>
-          <div class="form-group"><input type="checkbox" id="adDehydration"><label for="adDehydration"> 臨床的脱水所見あり</label></div>
+          <div class="form-group"><label><input type="checkbox" id="adDehydration"> 臨床的脱水所見あり</label></div>
         </div>
         <small>※ BUN≥21 または臨床的脱水で1点</small>
       </div>
@@ -356,7 +356,7 @@ class ADROPTTool extends BaseTool {
       </div>
       <div class="assessment-section">
         <h4><i class="fas fa-brain"></i> 意識（Orientation）</h4>
-        <div class="form-group"><input type="checkbox" id="adConfusion"><label for="adConfusion"> 見当識障害/意識障害あり</label></div>
+        <div class="form-group"><label><input type="checkbox" id="adConfusion"> 見当識障害/意識障害あり</label></div>
       </div>
       <div class="assessment-section">
         <h4><i class="fas fa-heartbeat"></i> 血圧（Pressure）</h4>
@@ -446,10 +446,10 @@ class CAMTool extends BaseTool {
   renderContent(){
     return `
       <div class="assessment-section">
-        <div class="form-group"><input type="checkbox" id="camAcute"><label for="camAcute"> 1) 急性発症または経過の変動</label></div>
-        <div class="form-group"><input type="checkbox" id="camAttention"><label for="camAttention"> 2) 注意障害（集中困難・逸脱）</label></div>
-        <div class="form-group"><input type="checkbox" id="camThinking"><label for="camThinking"> 3) 思考のまとまりのなさ（支離滅裂・まとまりがない）</label></div>
-        <div class="form-group"><input type="checkbox" id="camConscious"><label for="camConscious"> 4) 意識レベルの変化（覚醒度の異常）</label></div>
+        <div class="form-group"><label><input type="checkbox" id="camAcute"> 1) 急性発症または経過の変動</label></div>
+        <div class="form-group"><label><input type="checkbox" id="camAttention"> 2) 注意障害（集中困難・逸脱）</label></div>
+        <div class="form-group"><label><input type="checkbox" id="camThinking"> 3) 思考のまとまりのなさ（支離滅裂・まとまりがない）</label></div>
+        <div class="form-group"><label><input type="checkbox" id="camConscious"> 4) 意識レベルの変化（覚醒度の異常）</label></div>
         <small>診断アルゴリズム：1と2があり、かつ3または4のいずれかがある場合にCAM陽性</small>
       </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
@@ -505,7 +505,7 @@ class CharlsonTool extends BaseTool {
   constructor(){ super('cci','Charlson併存疾患指数（CCI）','併存疾患の重み付け合計で予後を推定します（必要に応じて年齢点加算）。'); }
   getIcon(){ return 'fas fa-list-check'; }
   renderContent(){
-    const item = (id,label,score)=>`<div class="form-group"><input type="checkbox" id="${id}" value="${score}"><label for="${id}"> ${label}（${score}）</label></div>`;
+    const item = (id,label,score)=>`<div class=\"form-group\"><label><input type=\"checkbox\" id=\"${id}\" value=\"${score}\"> ${label}（${score}）</label></div>`;
     return `
       <div class="assessment-section">
         <div class="form-row">
@@ -533,9 +533,12 @@ class CharlsonTool extends BaseTool {
             ${item('cciAIDS','AIDS',6)}
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group"><input type="checkbox" id="cciAgeUse"><label for="cciAgeUse"> 年齢ポイントを加算する</label></div>
-          <div class="form-group"><label for="cciAge">年齢</label><input type="number" id="cciAge" min="0" max="120" placeholder="例: 78"></div>
+        <div class="form-group">
+          <input type="checkbox" id="cciAgeUse"><label for="cciAgeUse"> 年齢ポイントを加算する</label>
+        </div>
+        <div class="form-group">
+          <label for="cciAge">年齢</label>
+          <input type="number" id="cciAge" min="0" max="120" placeholder="例: 78" disabled>
         </div>
         <small>年齢点の目安：50-59:+1, 60-69:+2, 70-79:+3, 80以上:+4（参考）</small>
       </div>
@@ -544,7 +547,23 @@ class CharlsonTool extends BaseTool {
       <div id="cciResult" class="result-container" style="display:none"></div>
       <div class="calculator-instance" style="display:none"></div>`;
   }
-  render(){ const s=super.render(); const c=new CharlsonCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
+  render(){
+    const s = super.render();
+    const c = new CharlsonCalculator();
+    const el = s.querySelector('.calculator-instance');
+    el.calculate = () => c.calculate();
+    el.reset = () => c.reset();
+
+    const ageUseCheckbox = s.querySelector('#cciAgeUse');
+    const ageInput = s.querySelector('#cciAge');
+    ageUseCheckbox.addEventListener('change', () => {
+      ageInput.disabled = !ageUseCheckbox.checked;
+      if (!ageUseCheckbox.checked) {
+        ageInput.value = '';
+      }
+    });
+    return s;
+  }
 }
 class CharlsonCalculator {
   agePoint(age){ if (age>=80) return 4; if (age>=70) return 3; if (age>=60) return 2; if (age>=50) return 1; return 0; }
@@ -560,143 +579,15 @@ class CharlsonCalculator {
       <div class="alert ${sum>=6?'alert-danger':(sum>=3?'alert-warning':'alert-info')}">高スコアほど予後不良リスクが高い可能性（施設方針/主治医の判断を優先）。</div>`;
     el.style.display='block';
   }
-  reset(){ ['cciAgeUse','cciMI','cciCHF','cciPVD','cciCVD','cciDementia','cciCOPD','cciCTD','cciUlcer','cciLiverMild','cciDM','cciDMC','cciHemiplegia','cciRenal','cciCancer','cciLeukemia','cciLymphoma','cciLiverSev','cciMets','cciAIDS'].forEach(id=>{ const e=document.getElementById(id); if(!e) return; if(e.type==='checkbox') e.checked=false; else e.value=''; }); const r=document.getElementById('cciResult'); if(r) r.style.display='none'; }
-}
-
-// -------- STOPP/START（参考チェック） --------
-class STOPPSTARTTool extends BaseTool {
-  constructor(){ super('stoppstart','STOPP/START（高齢者処方・参考）','自施設の最新版に基づく処方適正チェックの補助。公式基準の要約ではありません。'); }
-  getIcon(){ return 'fas fa-prescription-bottle-medical'; }
-  renderContent(){
-    const item=(id,txt)=>`<div class="form-group"><input type="checkbox" id="${id}"><label for="${id}"> ${txt}</label></div>`;
-    return `
-      <div class="alert alert-info"><i class="fas fa-info-circle"></i> 参考用ツールです。正確な判断は自施設のガイドライン/主治医の指示に従ってください。</div>
-      <div class="form-group"><input id="stoppSearch" class="search-input" placeholder="カテゴリ/薬剤名で検索..."></div>
-      <div id="stoppList" class="als-grid">
-        <div><h4>過量/重複/期間</h4>${item('stopp1','重複処方/長期投与の見直し')}</div>
-        <div><h4>抗コリン負荷</h4>${item('stopp2','抗コリン作用の強い薬剤の併用に注意')}</div>
-        <div><h4>鎮静/転倒</h4>${item('stopp3','ベンゾ系・Z薬・オピオイドの併用/量')}</div>
-        <div><h4>腎機能</h4>${item('stopp4','CrCl低下時の用量調整・禁忌の確認')}</div>
-        <div><h4>START 追加検討</h4>${item('start1','適応があるのに未導入の薬剤（例：骨粗鬆症治療など）')}</div>
-      </div>
-      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').exportNotes()">チェック内容をコピー</button>
-      <div class="calculator-instance" style="display:none"></div>`;
-  }
-  render(){ const s=super.render(); const inst=new STOPPSTARTRef(); const el=s.querySelector('.calculator-instance'); el.exportNotes=()=>inst.exportNotes(); const search=s.querySelector('#stoppSearch'); if(search){ search.addEventListener('input', (e)=> inst.filterList(e.target.value, s.querySelector('#stoppList')) ); } return s; }
-}
-class STOPPSTARTRef {
-  filterList(q, container){ if(!q){ Array.from(container.querySelectorAll('div')).forEach(d=>d.style.display=''); return; } const query=q.toLowerCase(); Array.from(container.children).forEach(div=>{ const t=(div.innerText||'').toLowerCase(); div.style.display = t.includes(query)? '':'none'; }); }
-  exportNotes(){ const checked=[...document.querySelectorAll('#stoppList input[type="checkbox"]')].filter(c=>c.checked).map(c=>c.parentElement.innerText.trim()); const text = `STOPP/START参考チェック\n- ${checked.join('\n- ')}`; navigator.clipboard?.writeText(text); alert('チェック内容をコピーしました'); }
-}
-
-// -------- Beers Criteria（参考チェック） --------
-class BeersTool extends BaseTool {
-  constructor(){ super('beers','Beers Criteria（参考）','高齢者の潜在的不適切処方の参考。公式基準の転載ではありません。'); }
-  getIcon(){ return 'fas fa-book-medical'; }
-  renderContent(){
-    const item=(id,txt)=>`<div class="form-group"><input type="checkbox" id="${id}"><label for="${id}"> ${txt}</label></div>`;
-    return `
-      <div class="alert alert-info"><i class="fas fa-info-circle"></i> 参考用の一般的留意点のみを掲載。正式版は学会発行資料をご確認ください。</div>
-      <div class="form-group"><input id="beersSearch" class="search-input" placeholder="カテゴリ/薬剤名で検索..."></div>
-      <div id="beersList" class="als-grid">
-        <div><h4>抗コリン性</h4>${item('be1','強い抗コリン薬の累積負荷')}</div>
-        <div><h4>鎮静/転倒</h4>${item('be2','高リスク鎮静薬（例：長時間型BZD等）')}</div>
-        <div><h4>NSAIDs</h4>${item('be3','消化管/腎合併症リスク・PPI併用の検討')}</div>
-        <div><h4>腎機能</h4>${item('be4','CrClに応じた用量・禁忌の確認')}</div>
-        <div><h4>相互作用</h4>${item('be5','高リスク相互作用の回避')}</div>
-      </div>
-      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').exportNotes()">チェック内容をコピー</button>
-      <div class="calculator-instance" style="display:none"></div>`;
-  }
-  render(){ const s=super.render(); const inst=new BeersRef(); const el=s.querySelector('.calculator-instance'); el.exportNotes=()=>inst.exportNotes(); const search=s.querySelector('#beersSearch'); if(search){ search.addEventListener('input', (e)=> inst.filterList(e.target.value, s.querySelector('#beersList')) ); } return s; }
-}
-class BeersRef { filterList(q, container){ if(!q){ Array.from(container.querySelectorAll('div')).forEach(d=>d.style.display=''); return; } const query=q.toLowerCase(); Array.from(container.children).forEach(div=>{ const t=(div.innerText||'').toLowerCase(); div.style.display = t.includes(query)? '':'none'; }); } exportNotes(){ const checked=[...document.querySelectorAll('#beersList input[type="checkbox"]')].filter(c=>c.checked).map(c=>c.parentElement.innerText.trim()); const text = `Beers参考チェック\n- ${checked.join('\n- ')}`; navigator.clipboard?.writeText(text); alert('チェック内容をコピーしました'); } }
-
-// -------- STOP-Bang（OSA簡易） --------
-class STOPBangTool extends BaseTool {
-  constructor(){ super('stopbang','STOP-Bang（睡眠時無呼吸）','いびき/日中眠気/無呼吸/高血圧/BMI/年齢/頸囲/性別の8項目。'); }
-  getIcon(){ return 'fas fa-moon'; }
-  renderContent(){
-    return `
-      <div class="assessment-section">
-        <div class="form-row">
-          <div class="form-group"><input type="checkbox" id="sbSnore"><label for="sbSnore"> いびきが大きい（S）</label></div>
-          <div class="form-group"><input type="checkbox" id="sbTired"><label for="sbTired"> 日中の疲労/眠気（T）</label></div>
-          <div class="form-group"><input type="checkbox" id="sbObserved"><label for="sbObserved"> 無呼吸の目撃（O）</label></div>
-          <div class="form-group"><input type="checkbox" id="sbBP"><label for="sbBP"> 高血圧（P）</label></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label for="sbBMI">BMI</label><input type="number" id="sbBMI" step="0.1" placeholder="例: 36"></div>
-          <div class="form-group"><label for="sbAge">年齢</label><input type="number" id="sbAge" min="0" max="120" placeholder="例: 58"></div>
-          <div class="form-group"><label for="sbNeck">頸囲(cm)</label><input type="number" id="sbNeck" step="0.1" placeholder="例: 42"></div>
-          <div class="form-group"><label for="sbSex">性別</label><select id="sbSex"><option value="male">男性</option><option value="female">女性</option></select></div>
-        </div>
-        <small>加点条件：BMI≥35, 年齢>50, 頸囲>40cm, 男性</small>
-      </div>
-      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
-      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
-      <div id="sbResult" class="result-container" style="display:none"></div>
-      <div class="calculator-instance" style="display:none"></div>`;
-  }
-  render(){ const s=super.render(); const c=new STOPBangCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
-}
-class STOPBangCalculator {
-  calculate(){
-    let score = 0;
-    score += (document.getElementById('sbSnore')?.checked?1:0);
-    score += (document.getElementById('sbTired')?.checked?1:0);
-    score += (document.getElementById('sbObserved')?.checked?1:0);
-    score += (document.getElementById('sbBP')?.checked?1:0);
-    const bmi=parseFloat(document.getElementById('sbBMI')?.value)||0; if (bmi>=35) score++;
-    const age=parseInt(document.getElementById('sbAge')?.value)||0; if (age>50) score++;
-    const neck=parseFloat(document.getElementById('sbNeck')?.value)||0; if (neck>40) score++;
-    const sex=document.getElementById('sbSex')?.value||'male'; if (sex==='male') score++;
-    let risk='低リスク'; let alert='alert-success'; if (score>=5) { risk='高リスク'; alert='alert-danger'; } else if (score>=3) { risk='中等度リスク'; alert='alert-warning'; }
-    const el=document.getElementById('sbResult');
-    el.innerHTML=`<h3>STOP-Bang</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${score}</span> / 8（${risk}）</div><div class="alert ${alert}">必要に応じて睡眠検査/耳鼻科紹介を検討。</div>`; el.style.display='block';
-  }
-  reset(){ ['sbSnore','sbTired','sbObserved','sbBP'].forEach(id=>{ const e=document.getElementById(id); if(e) e.checked=false; }); ['sbBMI','sbAge','sbNeck'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const s=document.getElementById('sbSex'); if(s) s.selectedIndex=0; const r=document.getElementById('sbResult'); if(r) r.style.display='none'; }
-}
-
-// -------- DNAR/ACP支援チェックリスト --------
-class ACPTool extends BaseTool {
-  constructor(){ super('acp','DNAR/ACP支援チェック','意思決定支援・方針確認のチェックリスト（自施設ポリシーに準拠）。'); }
-  getIcon(){ return 'fas fa-file-signature'; }
-  renderContent(){
-    const chk=(id,txt)=>`<div class="form-group"><input type="checkbox" id="${id}"><label for="${id}"> ${txt}</label></div>`;
-    return `
-      <div class="alert alert-info"><i class="fas fa-info-circle"></i> 医療判断ではありません。施設の手順書/主治医の指示に従ってください。</div>
-      <div class="assessment-section">
-        <h4><i class="fas fa-users"></i> 事前準備</h4>
-        ${chk('acpDm','意思決定代行者/キーパーソンの確認')}
-        ${chk('acpCom','コミュニケーション能力/理解度の評価')}
-        ${chk('acpInfo','現状/予後/選択肢の情報提供')}
-        <h4><i class="fas fa-heart"></i> 目標と希望</h4>
-        ${chk('acpGoal','治療目標（延命/緩和/快適優先）')}
-        ${chk('acpCode','コードステータス（DNAR含む）確認')}
-        ${chk('acpHosp','入院/在宅の希望と条件')}
-        <h4><i class="fas fa-notes-medical"></i> 具体的選好</h4>
-        ${chk('acpVent','人工呼吸/非侵襲換気の希望')}
-        ${chk('acpFeeding','経管/静脈栄養・補液の方針')}
-        ${chk('acpTrans','輸血/抗菌薬/検査の範囲')}
-        <h4><i class="fas fa-file-signature"></i> 文書と共有</h4>
-        ${chk('acpDoc','同意書/POLST/指示書の有無と保管')}
-        ${chk('acpShare','家族/多職種/救急隊への共有')}
-        <div class="form-group"><label for="acpNotes">メモ</label><textarea id="acpNotes" rows="4" placeholder="特記事項や合意内容..." style="width:100%"></textarea></div>
-      </div>
-      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').exportSummary()">サマリーをコピー</button>
-      <div class="calculator-instance" style="display:none"></div>`;
-  }
-  render(){ const s=super.render(); const inst=new ACPHelper(); const el=s.querySelector('.calculator-instance'); el.exportSummary=()=>inst.exportSummary(); return s; }
-}
-class ACPHelper {
-  exportSummary(){
-    const ids=['acpDm','acpCom','acpInfo','acpGoal','acpCode','acpHosp','acpVent','acpFeeding','acpTrans','acpDoc','acpShare'];
-    const done = ids.filter(id=> document.getElementById(id)?.checked).map(id=> document.querySelector(`label[for="${id}"]`)?.innerText || document.getElementById(id).parentElement.innerText );
-    const notes = document.getElementById('acpNotes')?.value || '';
-    const text = `DNAR/ACP チェックリスト\n完了:\n- ${done.join('\n- ')}\nメモ:\n${notes}`;
-    navigator.clipboard?.writeText(text);
-    alert('サマリーをコピーしました');
+  reset(){
+    ['cciAgeUse','cciMI','cciCHF','cciPVD','cciCVD','cciDementia','cciCOPD','cciCTD','cciUlcer','cciLiverMild','cciDM','cciDMC','cciHemiplegia','cciRenal','cciCancer','cciLeukemia','cciLymphoma','cciLiverSev','cciMets','cciAIDS'].forEach(id=>{ const e=document.getElementById(id); if(!e) return; if(e.type==='checkbox') e.checked=false; else e.value=''; });
+    const ageInput = document.getElementById('cciAge');
+    if(ageInput) {
+      ageInput.value = '';
+      ageInput.disabled = true;
+    }
+    const r=document.getElementById('cciResult');
+    if(r) r.style.display='none';
   }
 }
 
@@ -809,5 +700,142 @@ class MoCACalculator {
     if (edu) edu.checked = false;
     const r = document.getElementById('mocaResult');
     if (r) r.style.display = 'none';
+  }
+}
+
+// -------- STOPP/START（参考チェック） --------
+class STOPPSTARTTool extends BaseTool {
+  constructor(){ super('stoppstart','STOPP/START（高齢者処方・参考）','自施設の最新版に基づく処方適正チェックの補助。公式基準の要約ではありません。'); }
+  getIcon(){ return 'fas fa-prescription-bottle-medical'; }
+  renderContent(){
+    const item=(id,txt)=>`<div class=\"form-group\"><label><input type=\"checkbox\" id=\"${id}\"> ${txt}</label></div>`;
+    return `
+      <div class="alert alert-info"><i class="fas fa-info-circle"></i> 参考用ツールです。正確な判断は自施設のガイドライン/主治医の指示に従ってください。</div>
+      <div class="form-group"><input id="stoppSearch" class="search-input" placeholder="カテゴリ/薬剤名で検索..."></div>
+      <div id="stoppList" class="als-grid">
+        <div><h4>過量/重複/期間</h4>${item('stopp1','重複処方/長期投与の見直し')}</div>
+        <div><h4>抗コリン負荷</h4>${item('stopp2','抗コリン作用の強い薬剤の併用に注意')}</div>
+        <div><h4>鎮静/転倒</h4>${item('stopp3','ベンゾ系・Z薬・オピオイドの併用/量')}</div>
+        <div><h4>腎機能</h4>${item('stopp4','CrCl低下時の用量調整・禁忌の確認')}</div>
+        <div><h4>START 追加検討</h4>${item('start1','適応があるのに未導入の薬剤（例：骨粗鬆症治療など）')}</div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').exportNotes()">チェック内容をコピー</button>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new STOPPSTARTRef(); const el=s.querySelector('.calculator-instance'); el.exportNotes=()=>inst.exportNotes(); const search=s.querySelector('#stoppSearch'); if(search){ search.addEventListener('input', (e)=> inst.filterList(e.target.value, s.querySelector('#stoppList')) ); } return s; }
+}
+class STOPPSTARTRef {
+  filterList(q, container){ if(!q){ Array.from(container.querySelectorAll('div')).forEach(d=>d.style.display=''); return; } const query=q.toLowerCase(); Array.from(container.children).forEach(div=>{ const t=(div.innerText||'').toLowerCase(); div.style.display = t.includes(query)? '':'none'; }); }
+  exportNotes(){ const checked=[...document.querySelectorAll('#stoppList input[type="checkbox"]')].filter(c=>c.checked).map(c=>c.parentElement.innerText.trim()); const text = `STOPP/START参考チェック\n- ${checked.join('\n- ')}`; navigator.clipboard?.writeText(text); alert('チェック内容をコピーしました'); }
+}
+
+// -------- Beers Criteria（参考チェック） --------
+class BeersTool extends BaseTool {
+  constructor(){ super('beers','Beers Criteria（参考）','高齢者の潜在的不適切処方の参考。公式基準の転載ではありません。'); }
+  getIcon(){ return 'fas fa-book-medical'; }
+  renderContent(){
+    const item=(id,txt)=>`<div class=\"form-group\"><label><input type=\"checkbox\" id=\"${id}\"> ${txt}</label></div>`;
+    return `
+      <div class="alert alert-info"><i class="fas fa-info-circle"></i> 参考用の一般的留意点のみを掲載。正式版は学会発行資料をご確認ください。</div>
+      <div class="form-group"><input id="beersSearch" class="search-input" placeholder="カテゴリ/薬剤名で検索..."></div>
+      <div id="beersList" class="als-grid">
+        <div><h4>抗コリン性</h4>${item('be1','強い抗コリン薬の累積負荷')}</div>
+        <div><h4>鎮静/転倒</h4>${item('be2','高リスク鎮静薬（例：長時間型BZD等）')}</div>
+        <div><h4>NSAIDs</h4>${item('be3','消化管/腎合併症リスク・PPI併用の検討')}</div>
+        <div><h4>腎機能</h4>${item('be4','CrClに応じた用量・禁忌の確認')}</div>
+        <div><h4>相互作用</h4>${item('be5','高リスク相互作用の回避')}</div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').exportNotes()">チェック内容をコピー</button>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new BeersRef(); const el=s.querySelector('.calculator-instance'); el.exportNotes=()=>inst.exportNotes(); const search=s.querySelector('#beersSearch'); if(search){ search.addEventListener('input', (e)=> inst.filterList(e.target.value, s.querySelector('#beersList')) ); } return s; }
+}
+class BeersRef { filterList(q, container){ if(!q){ Array.from(container.querySelectorAll('div')).forEach(d=>d.style.display=''); return; } const query=q.toLowerCase(); Array.from(container.children).forEach(div=>{ const t=(div.innerText||'').toLowerCase(); div.style.display = t.includes(query)? '':'none'; }); } exportNotes(){ const checked=[...document.querySelectorAll('#beersList input[type="checkbox"]')].filter(c=>c.checked).map(c=>c.parentElement.innerText.trim()); const text = `Beers参考チェック\n- ${checked.join('\n- ')}`; navigator.clipboard?.writeText(text); alert('チェック内容をコピーしました'); } }
+
+// -------- STOP-Bang（OSA簡易） --------
+class STOPBangTool extends BaseTool {
+  constructor(){ super('stopbang','STOP-Bang（睡眠時無呼吸）','いびき/日中眠気/無呼吸/高血圧/BMI/年齢/頸囲/性別の8項目。'); }
+  getIcon(){ return 'fas fa-moon'; }
+  renderContent(){
+    return `
+      <div class="assessment-section">
+        <div class="form-row">
+          <div class="form-group"><label><input type="checkbox" id="sbSnore"> いびきが大きい（S）</label></div>
+          <div class="form-group"><label><input type="checkbox" id="sbTired"> 日中の疲労/眠気（T）</label></div>
+          <div class="form-group"><label><input type="checkbox" id="sbObserved"> 無呼吸の目撃（O）</label></div>
+          <div class="form-group"><label><input type="checkbox" id="sbBP"> 高血圧（P）</label></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="sbBMI">BMI</label><input type="number" id="sbBMI" step="0.1" placeholder="例: 36"></div>
+          <div class="form-group"><label for="sbAge">年齢</label><input type="number" id="sbAge" min="0" max="120" placeholder="例: 58"></div>
+          <div class="form-group"><label for="sbNeck">頸囲(cm)</label><input type="number" id="sbNeck" step="0.1" placeholder="例: 42"></div>
+          <div class="form-group"><label for="sbSex">性別</label><select id="sbSex"><option value="male">男性</option><option value="female">女性</option></select></div>
+        </div>
+        <small>加点条件：BMI≥35, 年齢>50, 頸囲>40cm, 男性</small>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="sbResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const c=new STOPBangCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
+}
+class STOPBangCalculator {
+  calculate(){
+    let score = 0;
+    score += (document.getElementById('sbSnore')?.checked?1:0);
+    score += (document.getElementById('sbTired')?.checked?1:0);
+    score += (document.getElementById('sbObserved')?.checked?1:0);
+    score += (document.getElementById('sbBP')?.checked?1:0);
+    const bmi=parseFloat(document.getElementById('sbBMI')?.value)||0; if (bmi>=35) score++;
+    const age=parseInt(document.getElementById('sbAge')?.value)||0; if (age>50) score++;
+    const neck=parseFloat(document.getElementById('sbNeck')?.value)||0; if (neck>40) score++;
+    const sex=document.getElementById('sbSex')?.value||'male'; if (sex==='male') score++;
+    let risk='低リスク'; let alert='alert-success'; if (score>=5) { risk='高リスク'; alert='alert-danger'; } else if (score>=3) { risk='中等度リスク'; alert='alert-warning'; }
+    const el=document.getElementById('sbResult');
+    el.innerHTML=`<h3>STOP-Bang</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${score}</span> / 8（${risk}）</div><div class="alert ${alert}">必要に応じて睡眠検査/耳鼻科紹介を検討。</div>`; el.style.display='block';
+  }
+  reset(){ ['sbSnore','sbTired','sbObserved','sbBP'].forEach(id=>{ const e=document.getElementById(id); if(e) e.checked=false; }); ['sbBMI','sbAge','sbNeck'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const s=document.getElementById('sbSex'); if(s) s.selectedIndex=0; const r=document.getElementById('sbResult'); if(r) r.style.display='none'; }
+}
+
+// -------- DNAR/ACP支援チェックリスト --------
+class ACPTool extends BaseTool {
+  constructor(){ super('acp','DNAR/ACP支援チェック','意思決定支援・方針確認のチェックリスト（自施設ポリシーに準拠）。'); }
+  getIcon(){ return 'fas fa-file-signature'; }
+  renderContent(){
+    const chk=(id,txt)=>`<div class=\"form-group\"><label><input type=\"checkbox\" id=\"${id}\"> ${txt}</label></div>`;
+    return `
+      <div class="alert alert-info"><i class="fas fa-info-circle"></i> 医療判断ではありません。施設の手順書/主治医の指示に従ってください。</div>
+      <div class="assessment-section">
+        <h4><i class="fas fa-users"></i> 事前準備</h4>
+        ${chk('acpDm','意思決定代行者/キーパーソンの確認')}
+        ${chk('acpCom','コミュニケーション能力/理解度の評価')}
+        ${chk('acpInfo','現状/予後/選択肢の情報提供')}
+        <h4><i class="fas fa-heart"></i> 目標と希望</h4>
+        ${chk('acpGoal','治療目標（延命/緩和/快適優先）')}
+        ${chk('acpCode','コードステータス（DNAR含む）確認')}
+        ${chk('acpHosp','入院/在宅の希望と条件')}
+        <h4><i class="fas fa-notes-medical"></i> 具体的選好</h4>
+        ${chk('acpVent','人工呼吸/非侵襲換気の希望')}
+        ${chk('acpFeeding','経管/静脈栄養・補液の方針')}
+        ${chk('acpTrans','輸血/抗菌薬/検査の範囲')}
+        <h4><i class="fas fa-file-signature"></i> 文書と共有</h4>
+        ${chk('acpDoc','同意書/POLST/指示書の有無と保管')}
+        ${chk('acpShare','家族/多職種/救急隊への共有')}
+        <div class="form-group"><label for="acpNotes">メモ</label><textarea id="acpNotes" rows="4" placeholder="特記事項や合意内容..." style="width:100%"></textarea></div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').exportSummary()">サマリーをコピー</button>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const inst=new ACPHelper(); const el=s.querySelector('.calculator-instance'); el.exportSummary=()=>inst.exportSummary(); return s; }
+}
+class ACPHelper {
+  exportSummary(){
+    const ids=['acpDm','acpCom','acpInfo','acpGoal','acpCode','acpHosp','acpVent','acpFeeding','acpTrans','acpDoc','acpShare'];
+    const done = ids.filter(id=> document.getElementById(id)?.checked).map(id=> document.querySelector(`label[for="${id}"]`)?.innerText || document.getElementById(id).parentElement.innerText );
+    const notes = document.getElementById('acpNotes')?.value || '';
+    const text = `DNAR/ACP チェックリスト\n完了:\n- ${done.join('\n- ')}\nメモ:\n${notes}`;
+    navigator.clipboard?.writeText(text);
+    alert('サマリーをコピーしました');
   }
 }

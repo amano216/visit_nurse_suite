@@ -193,9 +193,11 @@ class NEWSTool extends BaseTool {
     renderContent() {
         return `
             <div class="alert alert-info">
-                <strong>NEWS（National Early Warning Score）:</strong> 患者の生理学的パラメータから重症度を評価します。
+                <strong>NEWS 2（National Early Warning Score）:</strong> 患者の生理学的パラメータから重症度を評価します。
             </div>
-
+            <div class="form-group">
+                <input type="checkbox" id="scale2Enabled"><label for="scale2Enabled">スケール2を使用（COPD等、目標SpO2: 88-92%）</label>
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label for="respirationRate">呼吸数 (回/分)</label>
@@ -209,10 +211,10 @@ class NEWSTool extends BaseTool {
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="airOrOxygen">空気 or 酸素</label>
+                    <label for="airOrOxygen">室内気 or 酸素投与</label>
                     <select id="airOrOxygen">
-                        <option value="0">空気</option>
-                        <option value="2">酸素</option>
+                        <option value="0">室内気</option>
+                        <option value="2">酸素投与あり</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -227,10 +229,10 @@ class NEWSTool extends BaseTool {
                     <input type="number" id="heartRate" min="0" placeholder="例: 75">
                 </div>
                 <div class="form-group">
-                    <label for="consciousnessLevel">意識レベル</label>
+                    <label for="consciousnessLevel">意識レベル (ACVPU)</label>
                     <select id="consciousnessLevel">
-                        <option value="0">Alert（清明）</option>
-                        <option value="3">Voice/Pain/Unresponsive（反応低下）</option>
+                        <option value="0">A: Alert（清明）</option>
+                        <option value="3">C, V, P, U: 新たな錯乱、声・痛みへの反応、無反応</option>
                     </select>
                 </div>
             </div>
@@ -590,111 +592,94 @@ class NEWSCalculator {
     calculate() {
         const respirationRate = parseInt(document.getElementById('respirationRate')?.value) || 0;
         const oxygenSaturation = parseInt(document.getElementById('oxygenSaturation')?.value) || 0;
-        const airOrOxygen = parseInt(document.getElementById('airOrOxygen')?.value) || 0;
+        const onOxygen = (document.getElementById('airOrOxygen')?.value || '0') === '2';
         const systolicBP = parseInt(document.getElementById('systolicBPNews')?.value) || 0;
         const heartRate = parseInt(document.getElementById('heartRate')?.value) || 0;
         const consciousnessLevel = parseInt(document.getElementById('consciousnessLevel')?.value) || 0;
         const temperature = parseFloat(document.getElementById('temperature')?.value) || 0;
+        const scale2Enabled = document.getElementById('scale2Enabled')?.checked || false;
 
         if (respirationRate === 0 || oxygenSaturation === 0 || systolicBP === 0 || heartRate === 0 || temperature === 0) {
             this.showError('すべての項目を入力してください。');
             return;
         }
 
-        let score = 0;
         const details = {};
-
-        // 呼吸数スコア
-        if (respirationRate <= 8) score += 3;
-        else if (respirationRate <= 11) score += 1;
-        else if (respirationRate <= 20) score += 0;
-        else if (respirationRate <= 24) score += 2;
-        else score += 3;
         details.respiration = this.getRespirationScore(respirationRate);
-
-        // 酸素飽和度スコア
-        if (oxygenSaturation <= 91) score += 3;
-        else if (oxygenSaturation <= 93) score += 2;
-        else if (oxygenSaturation <= 95) score += 1;
-        else score += 0;
-        details.oxygen = this.getOxygenScore(oxygenSaturation);
-
-        // 空気/酸素
-        score += airOrOxygen;
-        details.airOxygen = airOrOxygen;
-
-        // 収縮期血圧スコア
-        if (systolicBP <= 90) score += 3;
-        else if (systolicBP <= 100) score += 2;
-        else if (systolicBP <= 110) score += 1;
-        else if (systolicBP <= 219) score += 0;
-        else score += 3;
+        details.oxygen = this.getOxygenScore(oxygenSaturation, scale2Enabled, onOxygen);
         details.bloodPressure = this.getBPScore(systolicBP);
-
-        // 心拍数スコア
-        if (heartRate <= 40) score += 3;
-        else if (heartRate <= 50) score += 1;
-        else if (heartRate <= 90) score += 0;
-        else if (heartRate <= 110) score += 1;
-        else if (heartRate <= 130) score += 2;
-        else score += 3;
         details.heartRate = this.getHRScore(heartRate);
-
-        // 意識レベル
-        score += consciousnessLevel;
         details.consciousness = consciousnessLevel;
-
-        // 体温スコア
-        if (temperature <= 35.0) score += 3;
-        else if (temperature <= 36.0) score += 1;
-        else if (temperature <= 38.0) score += 0;
-        else if (temperature <= 39.0) score += 1;
-        else score += 2;
         details.temperature = this.getTempScore(temperature);
+        details.airOxygen = onOxygen ? 2 : 0;
+
+        let score = details.respiration + details.oxygen + details.bloodPressure + details.heartRate + details.consciousness + details.temperature;
+
+        // NEWS2では、スケール1の場合のみ酸素投与で2点加算される
+        if (onOxygen && !scale2Enabled) {
+            score += details.airOxygen;
+        }
 
         this.displayResult(score, details, {
-            respirationRate, oxygenSaturation, airOrOxygen, systolicBP, heartRate, consciousnessLevel, temperature
+            respirationRate, oxygenSaturation, onOxygen, systolicBP, heartRate, consciousnessLevel, temperature, scale2Enabled
         });
     }
 
     getRespirationScore(rate) {
         if (rate <= 8) return 3;
-        else if (rate <= 11) return 1;
-        else if (rate <= 20) return 0;
-        else if (rate <= 24) return 2;
-        else return 3;
+        if (rate >= 9 && rate <= 11) return 1;
+        if (rate >= 12 && rate <= 20) return 0;
+        if (rate >= 21 && rate <= 24) return 2;
+        if (rate >= 25) return 3;
+        return 0;
     }
 
-    getOxygenScore(sat) {
-        if (sat <= 91) return 3;
-        else if (sat <= 93) return 2;
-        else if (sat <= 95) return 1;
-        else return 0;
+    getOxygenScore(sat, scale2, onO2) {
+        if (scale2) {
+            if (sat <= 83) return 3;
+            if (sat >= 84 && sat <= 85) return 2;
+            if (sat >= 86 && sat <= 87) return 1;
+            if (sat >= 88 && sat <= 92) return 0;
+            if (onO2) {
+                if (sat >= 93 && sat <= 94) return 1;
+                if (sat >= 95 && sat <= 96) return 2;
+                if (sat >= 97) return 3;
+            }
+            return 0;
+        } else { // Scale 1
+            if (sat <= 91) return 3;
+            if (sat >= 92 && sat <= 93) return 2;
+            if (sat >= 94 && sat <= 95) return 1;
+            return 0;
+        }
     }
 
     getBPScore(bp) {
         if (bp <= 90) return 3;
-        else if (bp <= 100) return 2;
-        else if (bp <= 110) return 1;
-        else if (bp <= 219) return 0;
-        else return 3;
+        if (bp >= 91 && bp <= 100) return 2;
+        if (bp >= 101 && bp <= 110) return 1;
+        if (bp >= 111 && bp <= 219) return 0;
+        if (bp >= 220) return 3;
+        return 0;
     }
 
     getHRScore(hr) {
         if (hr <= 40) return 3;
-        else if (hr <= 50) return 1;
-        else if (hr <= 90) return 0;
-        else if (hr <= 110) return 1;
-        else if (hr <= 130) return 2;
-        else return 3;
+        if (hr >= 41 && hr <= 50) return 1;
+        if (hr >= 51 && hr <= 90) return 0;
+        if (hr >= 91 && hr <= 110) return 1;
+        if (hr >= 111 && hr <= 130) return 2;
+        if (hr >= 131) return 3;
+        return 0;
     }
 
     getTempScore(temp) {
         if (temp <= 35.0) return 3;
-        else if (temp <= 36.0) return 1;
-        else if (temp <= 38.0) return 0;
-        else if (temp <= 39.0) return 1;
-        else return 2;
+        if (temp >= 35.1 && temp <= 36.0) return 1;
+        if (temp >= 36.1 && temp <= 38.0) return 0;
+        if (temp >= 38.1 && temp <= 39.0) return 1;
+        if (temp >= 39.1) return 2;
+        return 0;
     }
 
     displayResult(score, details, values) {
@@ -702,26 +687,28 @@ class NEWSCalculator {
         if (!resultDiv) return;
 
         let riskLevel, recommendation, alertClass;
-        if (score === 0) {
-            riskLevel = '低リスク';
-            recommendation = '継続的な基本ケア';
-            alertClass = 'alert-success';
-        } else if (score <= 4) {
-            riskLevel = '低〜中リスク';
-            recommendation = '4-6時間毎の観察';
-            alertClass = 'alert-warning';
-        } else if (score <= 6) {
-            riskLevel = '中リスク';
-            recommendation = '1時間毎の観察、医師への報告';
-            alertClass = 'alert-warning';
-        } else {
+        if (score >= 7) {
             riskLevel = '高リスク';
-            recommendation = '継続的な観察、緊急医師診察';
+            recommendation = '緊急対応が必要。即時医師診察を要請。';
             alertClass = 'alert-danger';
+        } else if (score >= 5) {
+            riskLevel = '中リスク';
+            recommendation = '緊急評価が必要。医師への報告と1時間毎の観察。';
+            alertClass = 'alert-warning';
+        } else if (score >= 1 && score <= 4) {
+            riskLevel = '低リスク';
+            recommendation = '4-6時間毎の観察。';
+            alertClass = 'alert-info';
+        } else {
+            riskLevel = 'リスクなし';
+            recommendation = '12時間毎の定期観察。';
+            alertClass = 'alert-success';
         }
 
+        const oxygenText = values.onOxygen ? `酸素投与あり (${details.airOxygen}点)` : '室内気 (0点)';
+
         resultDiv.innerHTML = `
-            <h3>NEWS評価結果</h3>
+            <h3>NEWS 2 評価結果</h3>
             <div class="result-item">
                 <strong>総スコア:</strong> <span class="highlight">${score}点</span>
             </div>
@@ -729,13 +716,19 @@ class NEWSCalculator {
                 <strong>呼吸数:</strong> ${values.respirationRate}回/分 (${details.respiration}点)
             </div>
             <div class="result-item">
-                <strong>酸素飽和度:</strong> ${values.oxygenSaturation}% (${details.oxygen}点)
+                <strong>酸素飽和度:</strong> ${values.oxygenSaturation}% (${details.oxygen}点) - ${values.scale2Enabled ? 'スケール2' : 'スケール1'}
+            </div>
+             <div class="result-item">
+                <strong>酸素投与:</strong> ${oxygenText}
             </div>
             <div class="result-item">
                 <strong>収縮期血圧:</strong> ${values.systolicBP}mmHg (${details.bloodPressure}点)
             </div>
             <div class="result-item">
                 <strong>心拍数:</strong> ${values.heartRate}回/分 (${details.heartRate}点)
+            </div>
+             <div class="result-item">
+                <strong>意識レベル:</strong> ${values.consciousnessLevel === 0 ? '清明' : '清明でない'} (${details.consciousness}点)
             </div>
             <div class="result-item">
                 <strong>体温:</strong> ${values.temperature}℃ (${details.temperature}点)
@@ -761,9 +754,12 @@ class NEWSCalculator {
             const element = document.getElementById(id);
             if (element) element.value = '';
         });
-        ['airOrOxygen', 'consciousnessLevel'].forEach(id => {
+        ['airOrOxygen', 'consciousnessLevel', 'scale2Enabled'].forEach(id => {
             const element = document.getElementById(id);
-            if (element) element.selectedIndex = 0;
+            if (element) {
+                if (element.type === 'checkbox') element.checked = false;
+                else element.selectedIndex = 0;
+            }
         });
         const resultDiv = document.getElementById('newsResult');
         if (resultDiv) resultDiv.style.display = 'none';
