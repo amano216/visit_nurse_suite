@@ -400,23 +400,23 @@ class SearchManager {
 
     initializeToolData() {
         return [
-            { name: 'cadd', title: 'CADD交換時期計算', keywords: ['cadd', 'ポンプ', '交換', '時期', 'リザーバー', '輸液'], icon: 'fas fa-syringe' },
-            { name: 'narcotic', title: '麻薬投与量計算', keywords: ['麻薬', 'モルヒネ', 'オキシコドン', 'フェンタニル', '投与量', '鎮痛'], icon: 'fas fa-pills' },
-            { name: 'harris', title: 'Harris-Benedict式', keywords: ['harris', 'ハリス', '基礎代謝', 'bmr', '栄養', 'カロリー'], icon: 'fas fa-calculator' },
+            { name: 'cadd', title: 'CADD交換時期計算', keywords: ['cadd', 'ポンプ', '交換', '時期', 'リザーバー', '輸液', 'シリンジ', 'PCA', '持続皮下注'], icon: 'fas fa-syringe' },
+            { name: 'narcotic', title: '麻薬投与量計算', keywords: ['麻薬', 'オピオイド', 'モルヒネ', 'オキシコドン', 'フェンタニル', '投与量', '鎮痛', '注射', '配合', '濃度'], icon: 'fas fa-pills' },
+            { name: 'harris', title: 'Harris-Benedict式', keywords: ['harris', 'ハリス', '基礎代謝', 'bmr', '栄養', 'カロリー', 'TDEE'], icon: 'fas fa-calculator' },
             { name: 'mna', title: 'MNA評価', keywords: ['mna', '栄養', '評価', 'アセスメント', '高齢者'], icon: 'fas fa-apple-alt' },
-            { name: 'qsofa', title: 'qSOFA', keywords: ['qsofa', '敗血症', 'sepsis', '重症度', '感染'], icon: 'fas fa-heartbeat' },
+            { name: 'qsofa', title: 'qSOFA', keywords: ['qsofa', '敗血症', 'sepsis', '重症度', '感染', 'ショック'], icon: 'fas fa-heartbeat' },
             { name: 'news', title: 'NEWS', keywords: ['news', '早期警告', 'スコア', '重症度', 'バイタル'], icon: 'fas fa-exclamation-triangle' },
             { name: 'ppi', title: 'PPI（がん予後指数）', keywords: ['ppi', 'がん', '予後', '指数', 'palliative', '緩和'], icon: 'fas fa-chart-line' },
             { name: 'bmi', title: 'BMI計算', keywords: ['bmi', '体格', '肥満', '体重', '身長'], icon: 'fas fa-weight' },
-            { name: 'gcs', title: 'Glasgow Coma Scale', keywords: ['gcs', '意識', '昏睡', 'グラスゴー', '神経'], icon: 'fas fa-brain' },
+            { name: 'gcs', title: 'Glasgow Coma Scale', keywords: ['gcs', '意識', '昏睡', 'グラスゴー', '神経', 'EVM'], icon: 'fas fa-brain' },
             { name: 'mmse', title: 'MMSE', keywords: ['mmse', '認知', '記憶', '認知症', '知能'], icon: 'fas fa-head-side-virus' },
             { name: 'sirs', title: 'SIRS評価', keywords: ['sirs', '全身性炎症', '感染', '発熱', '頻脈'], icon: 'fas fa-thermometer-full' },
-            { name: 'wound', title: '創傷評価（DESIGN-R）', keywords: ['創傷', '褥瘡', 'design', 'wound', '皮膚'], icon: 'fas fa-band-aid' },
-            { name: 'pain', title: '疼痛評価（NRS）', keywords: ['疼痛', '痛み', 'nrs', 'pain', '鎮痛'], icon: 'fas fa-exclamation-circle' },
+            { name: 'wound', title: '創傷評価（DESIGN-R）', keywords: ['創傷', '褥瘡', 'design', 'DESIGN-R', 'wound', '皮膚'], icon: 'fas fa-band-aid' },
+            { name: 'pain', title: '疼痛評価（NRS）', keywords: ['疼痛', '痛み', 'nrs', 'pain', '鎮痛', 'VAS', '突出痛', 'breakthrough'], icon: 'fas fa-exclamation-circle' },
             { name: 'barthel', title: 'Barthel Index（ADL）', keywords: ['barthel', 'adl', '日常生活', '自立度', '介護'], icon: 'fas fa-walking' },
-            { name: 'ostomy', title: 'ストマケア（DET）', keywords: ['ストマ', 'オストミー', 'DET', '皮膚障害', '装具', '尿路', 'カットサイズ'], icon: 'fas fa-toilet' },
-            { name: 'hf', title: '心不全評価（NYHA/Framingham/プロファイル）', keywords: ['心不全', 'NYHA', 'Framingham', 'うっ血', '起坐呼吸', 'PND', '体重増加'], icon: 'fas fa-heart' },
-            { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', 'S/F'], icon: 'fas fa-lungs' },
+            { name: 'ostomy', title: 'ストマケア（DET）', keywords: ['ストマ', 'ストーマ', 'オストミー', 'DET', '皮膚障害', '装具', '尿路', 'カットサイズ'], icon: 'fas fa-toilet' },
+            { name: 'hf', title: '心不全評価（NYHA/Framingham/プロファイル）', keywords: ['心不全', 'NYHA', 'Framingham', 'うっ血', '起坐呼吸', 'PND', '体重増加', 'Warm', 'Cold', 'Wet', 'Dry'], icon: 'fas fa-heart' },
+            { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', '酸素濃度', '在宅酸素', 'HOT', 'S/F', 'SF比', 'ROX'], icon: 'fas fa-lungs' },
             { name: 'alsfrs', title: 'ALS-FRS-R', keywords: ['ALS', 'FRS', '球麻痺', '巧緻運動', '呼吸'], icon: 'fas fa-dna' },
             { name: 'braden', title: 'Braden褥瘡リスク', keywords: ['ブレーデン', '褥瘡', '圧迫', 'スキン', '皮膚', 'リスク'], icon: 'fas fa-procedures' },
             { name: 'morse', title: 'Morse転倒リスク', keywords: ['モース', '転倒', 'リスク', '歩行', '補助具', '点滴'], icon: 'fas fa-person-falling' },
@@ -443,11 +443,15 @@ class SearchManager {
             { name: 'ohatj', title: 'OHAT-J（口腔評価）', keywords: ['口腔','歯科','ohat','オーラル','義歯','口腔ケア'], icon: 'fas fa-tooth' },
             { name: 'sas', title: 'SAS（身体活動能力早見）', keywords: ['運動','活動','mets','手術前','体力','耐久'], icon: 'fas fa-person-running' },
             // 追加: 酸素ボンベ時間 / ABCD-Stoma / SkinTear / PAINAD / AbbeyPain
-            { name: 'o2time', title: '酸素ボンベ残時間', keywords: ['酸素','O2','ボンベ','残量','圧力','流量','時間','在宅酸素'], icon: 'fas fa-clock' },
+            { name: 'o2time', title: '酸素ボンベ残時間', keywords: ['酸素','O2','ボンベ','残量','圧力','流量','時間','在宅酸素','HOT','残圧','残時間'], icon: 'fas fa-clock' },
             { name: 'abcdstoma', title: 'ABCD-Stoma評価', keywords: ['ABCD','stoma','ストマ','ストーマ','皮膚','合併症','リーク','ケア'], icon: 'fas fa-toilet' },
             { name: 'skintear', title: 'Skin Tear（ISTAP）', keywords: ['スキンテア','皮膚裂傷','ISTAP','創傷','皮膚'], icon: 'fas fa-band-aid' },
             { name: 'painad', title: 'PAINAD（認知症疼痛）', keywords: ['PAINAD','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-face-frown' },
-            { name: 'abbeypain', title: 'Abbey Pain Scale', keywords: ['Abbey','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-clipboard-list' }
+            { name: 'abbeypain', title: 'Abbey Pain Scale', keywords: ['Abbey','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-clipboard-list' },
+            // 疼痛拡張: OME/BT, CPOT, BPS
+            { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算'], icon: 'fas fa-scale-balanced' },
+            { name: 'cpot', title: 'CPOT（非言語的疼痛）', keywords: ['CPOT','疼痛','表情','筋緊張','体動','人工呼吸器','非言語','評価'], icon: 'fas fa-face-grimace' },
+            { name: 'bps', title: 'BPS（Behavioral Pain Scale）', keywords: ['BPS','疼痛','表情','上肢','人工呼吸器','行動','非言語'], icon: 'fas fa-person' }
         ];
     }
 
@@ -649,6 +653,10 @@ class ToolFactory {
             'skintear': () => new SkinTearTool(),
             'painad': () => new PAINADTool(),
             'abbeypain': () => new AbbeyPainTool(),
+            // 疼痛拡張
+            'ome': () => new OpioidEquivalenceTool(),
+            'cpot': () => new CPOTTool(),
+            'bps': () => new BPSTool(),
         };
 
         const toolCreator = toolMap[toolName];
