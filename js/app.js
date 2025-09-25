@@ -412,11 +412,11 @@ class SearchManager {
             { name: 'mmse', title: 'MMSE', keywords: ['mmse', '認知', '記憶', '認知症', '知能'], icon: 'fas fa-head-side-virus' },
             { name: 'sirs', title: 'SIRS評価', keywords: ['sirs', '全身性炎症', '感染', '発熱', '頻脈'], icon: 'fas fa-thermometer-full' },
             { name: 'wound', title: '創傷評価（DESIGN-R）', keywords: ['創傷', '褥瘡', 'design', 'DESIGN-R', 'wound', '皮膚'], icon: 'fas fa-band-aid' },
-            { name: 'pain', title: '疼痛評価（NRS）', keywords: ['疼痛', '痛み', 'nrs', 'pain', '鎮痛', 'VAS', '突出痛', 'breakthrough'], icon: 'fas fa-exclamation-circle' },
+            { name: 'pain', title: '疼痛評価（NRS）', keywords: ['疼痛', '痛み', 'nrs', 'pain', '鎮痛', 'VAS', '突出痛', 'breakthrough', 'レスキュー', 'BT'], icon: 'fas fa-exclamation-circle' },
             { name: 'barthel', title: 'Barthel Index（ADL）', keywords: ['barthel', 'adl', '日常生活', '自立度', '介護'], icon: 'fas fa-walking' },
-            { name: 'ostomy', title: 'ストマケア（DET）', keywords: ['ストマ', 'ストーマ', 'オストミー', 'DET', '皮膚障害', '装具', '尿路', 'カットサイズ'], icon: 'fas fa-toilet' },
+            { name: 'ostomy', title: 'ストマケア（DET）', keywords: ['ストマ', 'ストーマ', 'オストミー', 'DET', '皮膚障害', '装具', '尿路', 'カットサイズ', '凸面', 'リング', '面板', '漏れ'], icon: 'fas fa-toilet' },
             { name: 'hf', title: '心不全評価（NYHA/Framingham/プロファイル）', keywords: ['心不全', 'NYHA', 'Framingham', 'うっ血', '起坐呼吸', 'PND', '体重増加', 'Warm', 'Cold', 'Wet', 'Dry'], icon: 'fas fa-heart' },
-            { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', '酸素濃度', '在宅酸素', 'HOT', 'S/F', 'SF比', 'ROX', 'ROX index', '呼吸数', 'RR'], icon: 'fas fa-lungs' },
+            { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', '酸素濃度', '在宅酸素', 'HOT', 'S/F', 'SF比', 'ROX', 'ROX index', '呼吸数', 'RR', '酸素流量', 'デバイス'], icon: 'fas fa-lungs' },
             { name: 'alsfrs', title: 'ALS-FRS-R', keywords: ['ALS', 'FRS', '球麻痺', '巧緻運動', '呼吸'], icon: 'fas fa-dna' },
             { name: 'braden', title: 'Braden褥瘡リスク', keywords: ['ブレーデン', '褥瘡', '圧迫', 'スキン', '皮膚', 'リスク'], icon: 'fas fa-procedures' },
             { name: 'morse', title: 'Morse転倒リスク', keywords: ['モース', '転倒', 'リスク', '歩行', '補助具', '点滴'], icon: 'fas fa-person-falling' },
@@ -436,20 +436,20 @@ class SearchManager {
             { name: 'stoppstart', title: 'STOPP/START（参考）', keywords: ['STOPP', 'START', '高齢者', '処方', '適正', 'ポリファーマシー'], icon: 'fas fa-prescription-bottle-medical' },
             { name: 'beers', title: 'Beers Criteria（参考）', keywords: ['Beers', '高齢者', '不適切処方', 'ガイドライン'], icon: 'fas fa-book-medical' },
             { name: 'stopbang', title: 'STOP-Bang（OSA）', keywords: ['無呼吸', '睡眠', 'いびき', 'STOP-Bang', 'OSA'], icon: 'fas fa-moon' },
-            { name: 'acp', title: 'DNAR/ACP支援', keywords: ['DNAR', 'ACP', '意思決定', 'Advance Care Planning', 'ポリシー'], icon: 'fas fa-file-signature' },
+            { name: 'acp', title: 'DNAR/ACP支援', keywords: ['DNAR', 'ACP', 'POLST', '意思決定', 'Advance Care Planning', 'Do Not Attempt Resuscitation', '蘇生拒否', '事前指示', 'ポリシー'], icon: 'fas fa-file-signature' },
             { name: 'moca', title: 'MoCA認知評価', keywords: ['moca', 'mci', '認知', '軽度認知障害', 'montreal', 'モカ'], icon: 'fas fa-brain' },
             // 追加: Zarit-8 / OHAT-J / SAS
             { name: 'zarit8', title: 'Zarit-8（介護負担）', keywords: ['介護者','負担','zarit','家族','レスパイト'], icon: 'fas fa-users' },
             { name: 'ohatj', title: 'OHAT-J（口腔評価）', keywords: ['口腔','歯科','ohat','オーラル','義歯','口腔ケア'], icon: 'fas fa-tooth' },
             { name: 'sas', title: 'SAS（身体活動能力早見）', keywords: ['運動','活動','mets','手術前','体力','耐久'], icon: 'fas fa-person-running' },
             // 追加: 酸素ボンベ時間 / ABCD-Stoma / SkinTear / PAINAD / AbbeyPain
-            { name: 'o2time', title: '酸素ボンベ残時間', keywords: ['酸素','O2','ボンベ','残量','圧力','流量','時間','在宅酸素','HOT','残圧','残時間'], icon: 'fas fa-clock' },
+            { name: 'o2time', title: '酸素ボンベ残時間', keywords: ['酸素','O2','ボンベ','残量','圧力','流量','時間','在宅酸素','HOT','残圧','残時間','ボンベ時間','継続時間'], icon: 'fas fa-clock' },
             { name: 'abcdstoma', title: 'ABCD-Stoma評価', keywords: ['ABCD','stoma','ストマ','ストーマ','皮膚','合併症','リーク','ケア'], icon: 'fas fa-toilet' },
             { name: 'skintear', title: 'Skin Tear（ISTAP）', keywords: ['スキンテア','皮膚裂傷','ISTAP','創傷','皮膚'], icon: 'fas fa-band-aid' },
             { name: 'painad', title: 'PAINAD（認知症疼痛）', keywords: ['PAINAD','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-face-frown' },
             { name: 'abbeypain', title: 'Abbey Pain Scale', keywords: ['Abbey','痛み','疼痛','認知症','行動','評価'], icon: 'fas fa-clipboard-list' },
             // 疼痛拡張: OME/BT, CPOT, BPS
-            { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算'], icon: 'fas fa-scale-balanced' },
+            { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','OMED','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算','経口','PO','貼付','パッチ','TD','静注','IV','皮下注','SC'], icon: 'fas fa-scale-balanced' },
             { name: 'cpot', title: 'CPOT（非言語的疼痛）', keywords: ['CPOT','疼痛','表情','筋緊張','体動','人工呼吸器','非言語','評価'], icon: 'fas fa-face-grimace' },
             { name: 'bps', title: 'BPS（Behavioral Pain Scale）', keywords: ['BPS','疼痛','表情','上肢','人工呼吸器','行動','非言語'], icon: 'fas fa-person' }
         ];
