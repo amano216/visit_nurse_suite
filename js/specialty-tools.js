@@ -237,12 +237,12 @@ class HeartFailureTool extends BaseTool {
             </select>
           </div>
           <div class="form-group">
-            <label><input type="checkbox" id="hfPND"> 夜間発作性呼吸困難（PND）</label>
+            <input type="checkbox" id="hfPND"><label for="hfPND"> 夜間発作性呼吸困難（PND）</label>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label><input type="checkbox" id="hfOrthopnea"> 起坐呼吸</label>
+            <input type="checkbox" id="hfOrthopnea"><label for="hfOrthopnea"> 起坐呼吸</label>
           </div>
           <div class="form-group">
             <label for="hfWeightGain">体重増加（直近数日, kg）</label>
@@ -253,19 +253,19 @@ class HeartFailureTool extends BaseTool {
       <div class="assessment-section">
         <h4><i class="fas fa-user-md"></i> 身体所見（Framingham）</h4>
         <div class="form-row">
-          <div class="form-group"><label><input type="checkbox" id="hfJVD"> 頸静脈怒張（Major）</label></div>
-          <div class="form-group"><label><input type="checkbox" id="hfRales"> ラ音（Major）</label></div>
-          <div class="form-group"><label><input type="checkbox" id="hfCardiomegaly"> 心拡大（Major）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfJVD"><label for="hfJVD"> 頸静脈怒張（Major）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfRales"><label for="hfRales"> ラ音（Major）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfCardiomegaly"><label for="hfCardiomegaly"> 心拡大（Major）</label></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label><input type="checkbox" id="hfEdema"> 両側下腿浮腫（Minor）</label></div>
-          <div class="form-group"><label><input type="checkbox" id="hfNocturnalCough"> 夜間咳（Minor）</label></div>
-          <div class="form-group"><label><input type="checkbox" id="hfHepatomegaly"> 肝腫大（Minor）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfEdema"><label for="hfEdema"> 両側下腿浮腫（Minor）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfNocturnalCough"><label for="hfNocturnalCough"> 夜間咳（Minor）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfHepatomegaly"><label for="hfHepatomegaly"> 肝腫大（Minor）</label></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label><input type="checkbox" id="hfPleuralEff"> 胸水（Minor）</label></div>
-          <div class="form-group"><label><input type="checkbox" id="hfTachy"> 頻脈>120/分（Minor）</label></div>
-          <div class="form-group"><label><input type="checkbox" id="hfCoolExt"> 四肢冷感（低灌流示唆）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfPleuralEff"><label for="hfPleuralEff"> 胸水（Minor）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfTachy"><label for="hfTachy"> 頻脈>120/分（Minor）</label></div>
+          <div class="form-group"><input type="checkbox" id="hfCoolExt"><label for="hfCoolExt"> 四肢冷感（低灌流示唆）</label></div>
         </div>
       </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>

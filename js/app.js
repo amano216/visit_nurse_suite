@@ -289,22 +289,16 @@ class QSOFATool extends BaseTool {
                 <strong>qSOFA評価項目：</strong> 3項目中2項目以上該当で陽性（敗血症の可能性が高い）
             </div>
             <div class="form-group">
-                <label>
-                    <input type="checkbox" id="alteredMentality"> 
-                    意識レベルの変化（GCS < 15）
-                </label>
+                <input type="checkbox" id="alteredMentality">
+                <label for="alteredMentality">意識レベルの変化（GCS < 15）</label>
             </div>
             <div class="form-group">
-                <label>
-                    <input type="checkbox" id="systolicBP"> 
-                    収縮期血圧 ≤ 100mmHg
-                </label>
+                <input type="checkbox" id="systolicBP">
+                <label for="systolicBP">収縮期血圧 ≤ 100mmHg</label>
             </div>
             <div class="form-group">
-                <label>
-                    <input type="checkbox" id="respiratoryRate"> 
-                    呼吸数 ≥ 22回/分
-                </label>
+                <input type="checkbox" id="respiratoryRate">
+                <label for="respiratoryRate">呼吸数 ≥ 22回/分</label>
             </div>
             <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
             <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
@@ -376,7 +370,8 @@ class SearchManager {
             { name: 'stoppstart', title: 'STOPP/START（参考）', keywords: ['STOPP', 'START', '高齢者', '処方', '適正', 'ポリファーマシー'], icon: 'fas fa-prescription-bottle-medical' },
             { name: 'beers', title: 'Beers Criteria（参考）', keywords: ['Beers', '高齢者', '不適切処方', 'ガイドライン'], icon: 'fas fa-book-medical' },
             { name: 'stopbang', title: 'STOP-Bang（OSA）', keywords: ['無呼吸', '睡眠', 'いびき', 'STOP-Bang', 'OSA'], icon: 'fas fa-moon' },
-            { name: 'acp', title: 'DNAR/ACP支援', keywords: ['DNAR', 'ACP', '意思決定', 'Advance Care Planning', 'ポリシー'], icon: 'fas fa-file-signature' }
+            { name: 'acp', title: 'DNAR/ACP支援', keywords: ['DNAR', 'ACP', '意思決定', 'Advance Care Planning', 'ポリシー'], icon: 'fas fa-file-signature' },
+            { name: 'moca', title: 'MoCA認知評価', keywords: ['moca', 'mci', '認知', '軽度認知障害', 'montreal', 'モカ'], icon: 'fas fa-brain' }
         ];
     }
 
@@ -566,7 +561,8 @@ class ToolFactory {
             'stoppstart': () => new STOPPSTARTTool(),
             'beers': () => new BeersTool(),
             'stopbang': () => new STOPBangTool(),
-            'acp': () => new ACPTool()
+            'acp': () => new ACPTool(),
+            'moca': () => new MoCATool()
         };
 
         const toolCreator = toolMap[toolName];
