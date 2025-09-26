@@ -7,6 +7,7 @@
 class NavigationManager {
     constructor() {
         this.menuToggle = document.getElementById('menuToggle');
+        this.homeButton = document.getElementById('homeButton');
         this.navMenu = document.getElementById('navMenu');
         this.currentTool = 'welcome';
         this.init();
@@ -20,6 +21,17 @@ class NavigationManager {
     bindEvents() {
         // メニュートグル
         this.menuToggle?.addEventListener('click', () => this.toggleMenu());
+        // ホームボタン
+        this.homeButton?.addEventListener('click', () => {
+            this.loadTool('welcome');
+            // 検索入力クリア
+            const input = document.getElementById('globalSearch');
+            if (input) input.value = '';
+            // メニューを閉じる（モバイル）
+            if (window.innerWidth <= 768) {
+                this.closeMenu();
+            }
+        });
         
         // ナビゲーションリンク
         document.querySelectorAll('[data-tool]').forEach(element => {
