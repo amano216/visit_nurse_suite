@@ -264,12 +264,18 @@ class NarcoticCalculatorTool extends BaseTool {
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="salineVolume">生理食塩水の量 (ml)</label>
+                    <label for="salineVolume">生理食塩水の量 (mL)</label>
                     <input type="number" id="salineVolume" min="0" step="0.1" placeholder="例: 50">
                 </div>
                 <div class="form-group">
                     <label for="targetHourlyDose">目標1時間投与量 (mg/h)</label>
                     <input type="number" id="targetHourlyDose" min="0" step="0.01" placeholder="例: 2.5">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="actualFlowRate">実流量 (mL/h)</label>
+                    <input type="number" id="actualFlowRate" min="0" step="0.01" placeholder="例: 1.5">
                 </div>
             </div>
             <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">計算実行</button>
@@ -772,19 +778,41 @@ class CADDCalculator {
 }
 
 class NarcoticCalculator {
+    formatNumber(value, { min=0, max=3 } = {}) {
+        try {
+            return new Intl.NumberFormat('ja-JP', {
+                useGrouping: true,
+                minimumFractionDigits: min,
+                maximumFractionDigits: max,
+            }).format(value);
+        } catch (_) {
+            // Intl未対応環境のフォールバック
+            const p = Math.pow(10, max);
+            const v = Math.round(value * p) / p;
+            const s = v.toString();
+            return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    }
+
+    fmt(value, unit, opts) {
+        const n = this.formatNumber(value, opts);
+        return `<span class="num">${n}</span> <span class="unit">${unit}</span>`;
+    }
     calculate() {
         const type = document.getElementById('narcoticType')?.value;
         const amount = parseFloat(document.getElementById('narcoticAmount')?.value) || 0;
         const saline = parseFloat(document.getElementById('salineVolume')?.value) || 0;
         const targetDose = parseFloat(document.getElementById('targetHourlyDose')?.value) || 0;
-        if (amount <= 0 || saline <= 0 || targetDose <= 0) {
-            this.showError('すべての値を正しく入力してください。');
+        const actualFlowRate = parseFloat(document.getElementById('actualFlowRate')?.value) || 0;
+        if (amount <= 0 || saline <= 0 || (targetDose <= 0 && actualFlowRate <= 0)) {
+            this.showError('薬液の作成条件（麻薬量・生食量）と、目標投与量（mg/h）または実流量（mL/h）のいずれかを入力してください。');
             return;
         }
 
         const totalVolume = saline;
         const concentration = amount / totalVolume; // mg/ml
-        const requiredFlowRate = targetDose / concentration; // ml/h
+        const requiredFlowRate = targetDose > 0 ? (targetDose / concentration) : 0; // mL/h
+        const deliveredDose = actualFlowRate > 0 ? (actualFlowRate * concentration) : 0; // mg/h
 
         this.displayResult({
             type,
@@ -793,7 +821,9 @@ class NarcoticCalculator {
             totalVolume,
             concentration,
             targetDose,
-            requiredFlowRate
+            requiredFlowRate,
+            actualFlowRate,
+            deliveredDose
         });
     }
 
@@ -813,20 +843,30 @@ class NarcoticCalculator {
                 <strong>麻薬の種類:</strong> ${typeNames[data.type]}
             </div>
             <div class="result-item">
-                <strong>麻薬の量:</strong> ${data.amount} mg
+                <strong>麻薬の量:</strong> ${this.fmt(data.amount, 'mg', {max:2})}
             </div>
             <div class="result-item">
-                <strong>生理食塩水の量:</strong> ${data.saline} ml
+                <strong>生理食塩水の量:</strong> ${this.fmt(data.saline, 'mL', {max:1})}
             </div>
             <div class="result-item">
-                <strong>薬液濃度:</strong> ${data.concentration.toFixed(3)} mg/ml
+                <strong>薬液濃度:</strong> ${this.fmt(data.concentration, 'mg/mL', {max:3})}
+            </div>
+            ${data.targetDose>0 ? `
+            <div class="result-item">
+                <strong>目標投与量:</strong> ${this.fmt(data.targetDose, 'mg/h', {max:2})}
             </div>
             <div class="result-item">
-                <strong>目標投与量:</strong> ${data.targetDose} mg/h
+                <strong>必要流量:</strong> <span class="highlight">${this.fmt(data.requiredFlowRate, 'mL/h', {max:2})}</span>
+            </div>
+            ` : ''}
+            ${data.actualFlowRate>0 ? `
+            <div class="result-item">
+                <strong>実流量:</strong> ${this.fmt(data.actualFlowRate, 'mL/h', {max:2})}
             </div>
             <div class="result-item">
-                <strong>必要流量:</strong> <span class="highlight">${data.requiredFlowRate.toFixed(2)} ml/h</span>
+                <strong>推定投与量:</strong> <span class="highlight">${this.fmt(data.deliveredDose, 'mg/h', {max:2})}</span>
             </div>
+            ` : ''}
         `;
         resultDiv.style.display = 'block';
     }

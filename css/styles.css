@@ -784,3 +784,8 @@ body {
 
 .result-actions { display:flex; gap:8px; margin:8px 0 0; }
 .result-actions .btn-sm { padding:6px 10px; font-size:12px; }
+
+/* Number+Unit readability */
+.result-item .num { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.result-item .unit { color:#6c757d; margin-left: 2px; }
+.highlight .unit { color: inherit; }
