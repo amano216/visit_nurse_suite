@@ -7,7 +7,7 @@
 class NavigationManager {
     constructor() {
         this.menuToggle = document.getElementById('menuToggle');
-        this.homeButton = document.getElementById('homeButton');
+        this.appTitle = document.getElementById('appTitle');
         this.navMenu = document.getElementById('navMenu');
         this.currentTool = 'welcome';
         this.init();
@@ -21,8 +21,8 @@ class NavigationManager {
     bindEvents() {
         // メニュートグル
         this.menuToggle?.addEventListener('click', () => this.toggleMenu());
-        // ホームボタン
-        this.homeButton?.addEventListener('click', () => {
+        // タイトルクリックでホームへ
+        this.appTitle?.addEventListener('click', () => {
             this.loadTool('welcome');
             // 検索入力クリア
             const input = document.getElementById('globalSearch');

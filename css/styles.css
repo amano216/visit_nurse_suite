@@ -87,6 +87,9 @@ body {
     display: none;
 }
 
+/* Header title clickable area */
+#appTitle { cursor: pointer; }
+
 /* Navigation Styles */
 .nav-menu {
     background: white;
