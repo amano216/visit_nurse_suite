@@ -1294,39 +1294,25 @@ class DripRateCalculator {
       const sec20 = this.secPerDrop(gtt20);
       const sec60 = this.secPerDrop(gtt60);
       lines.push(`<div class="result-item"><strong>mL/h:</strong> <span class="highlight">${mlh.toFixed(0)}</span></div>`);
-      lines.push(`<div class="result-item">20滴/mL: <strong>${gtt20.toFixed(0)}</strong> 滴/分（約 ${sec20.toFixed(1)} 秒/滴）</div>`);
-      lines.push(`<div class="result-item">60滴/mL: <strong>${gtt60.toFixed(0)}</strong> 滴/分（約 ${sec60.toFixed(1)} 秒/滴）</div>`);
+      const d10_20 = Math.round(gtt20/6);
+      const d10_60 = Math.round(gtt60/6);
+      lines.push(`<div class="result-item">20滴/mL: <strong>${gtt20.toFixed(0)}</strong> 滴/分（約 ${sec20.toFixed(1)} 秒/滴・10秒で約 ${d10_20} 滴）</div>`);
+      lines.push(`<div class="result-item">60滴/mL: <strong>${gtt60.toFixed(0)}</strong> 滴/分（約 ${sec60.toFixed(1)} 秒/滴・10秒で約 ${d10_60} 滴）</div>`);
     }
 
     if (sec>0) {
       const gtt = 60/sec;
       const mlh20 = this.mlhFromSecPerDrop(sec, 20);
       const mlh60 = this.mlhFromSecPerDrop(sec, 60);
-      lines.push(`<div class="result-item"><strong>秒/滴:</strong> <span class="highlight">${sec.toFixed(1)}</span> 秒 → <strong>${gtt.toFixed(0)}</strong> 滴/分</div>`);
-      lines.push(`<div class="result-item">20滴/mL: <strong>${mlh20.toFixed(0)}</strong> mL/h（${gtt.toFixed(0)} 滴/分）</div>`);
-      lines.push(`<div class="result-item">60滴/mL: <strong>${mlh60.toFixed(0)}</strong> mL/h（${gtt.toFixed(0)} 滴/分）</div>`);
+      const d10 = Math.round(gtt/6);
+      lines.push(`<div class="result-item"><strong>秒/滴:</strong> <span class="highlight">${sec.toFixed(1)}</span> 秒 → <strong>${gtt.toFixed(0)}</strong> 滴/分（10秒で約 ${d10} 滴）</div>`);
+      lines.push(`<div class="result-item">20滴/mL: <strong>${mlh20.toFixed(0)}</strong> mL/h（${gtt.toFixed(0)} 滴/分・10秒で約 ${d10} 滴）</div>`);
+      lines.push(`<div class="result-item">60滴/mL: <strong>${mlh60.toFixed(0)}</strong> mL/h（${gtt.toFixed(0)} 滴/分・10秒で約 ${d10} 滴）</div>`);
     }
-
-    // 定番mL/hの早見表
-    const presets=[20,30,40,50,60,80,100,120,150];
-    const rows = presets.map(v=>{
-      const g20=this.dropsPerMin(v,20); const g60=this.dropsPerMin(v,60);
-      const s20=this.secPerDrop(g20); const s60=this.secPerDrop(g60);
-      return `<tr><td>${v}</td><td>${g20.toFixed(0)}</td><td>${s20.toFixed(1)}</td><td>${g60.toFixed(0)}</td><td>${s60.toFixed(1)}</td></tr>`;
-    }).join('');
 
     el.innerHTML = `
       <h3>点滴速度 計算結果</h3>
       ${lines.length? lines.join('') : '<div class="alert alert-info">条件を入力して「計算」を押してください。</div>'}
-      <div class="divider"></div>
-      <h4>mL/h 早見表（20滴/60滴）</h4>
-      <div class="table-responsive">
-        <table class="table-compact">
-          <thead><tr><th>mL/h</th><th>20滴: 滴/分</th><th>20滴: 秒/滴</th><th>60滴: 滴/分</th><th>60滴: 秒/滴</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-      <div class="alert alert-info">注: 20滴=1mL（マクロ）、60滴=1mL（マイクロ）を前提とした目安換算です。</div>
     `;
     el.style.display='block';
   }
