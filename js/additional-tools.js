@@ -551,9 +551,9 @@ class NEWSCalculator {
 
         let score = details.respiration + details.oxygen + details.bloodPressure + details.heartRate + details.consciousness + details.temperature;
 
-        // NEWS2では、スケール1の場合のみ酸素投与で2点加算される
-        if (onOxygen && !scale2Enabled) {
-            score += details.airOxygen;
+        // NEWS2では、スケールに関わらず酸素投与で2点加算される
+        if (onOxygen) {
+            score += details.airOxygen; // = 2点
         }
 
         this.displayResult(score, details, {
@@ -571,22 +571,20 @@ class NEWSCalculator {
     }
 
     getOxygenScore(sat, scale2, onO2) {
+        // NEWS2: SpO2の配点はスケールに応じて決まり、酸素投与の有無に依存しない（+2点は別項目）
         if (scale2) {
             if (sat <= 83) return 3;
-            if (sat >= 84 && sat <= 85) return 2;
-            if (sat >= 86 && sat <= 87) return 1;
-            if (sat >= 88 && sat <= 92) return 0;
-            if (onO2) {
-                if (sat >= 93 && sat <= 94) return 1;
-                if (sat >= 95 && sat <= 96) return 2;
-                if (sat >= 97) return 3;
-            }
-            return 0;
+            if (sat <= 85) return 2; // 84-85
+            if (sat <= 87) return 1; // 86-87
+            if (sat <= 92) return 0; // 88-92
+            if (sat <= 94) return 1; // 93-94
+            if (sat <= 96) return 2; // 95-96
+            return 3; // >=97
         } else { // Scale 1
             if (sat <= 91) return 3;
-            if (sat >= 92 && sat <= 93) return 2;
-            if (sat >= 94 && sat <= 95) return 1;
-            return 0;
+            if (sat <= 93) return 2; // 92-93
+            if (sat <= 95) return 1; // 94-95
+            return 0; // >=96
         }
     }
 
@@ -623,15 +621,25 @@ class NEWSCalculator {
         if (!resultDiv) return;
 
         let riskLevel, recommendation, alertClass;
+        const anySingleThree = [
+            details.respiration,
+            details.oxygen,
+            details.bloodPressure,
+            details.heartRate,
+            details.consciousness,
+            details.temperature
+        ].some(v => v === 3);
+
         if (score >= 7) {
             riskLevel = '高リスク';
             recommendation = '緊急対応が必要。即時医師診察を要請。';
             alertClass = 'alert-danger';
-        } else if (score >= 5) {
+        } else if (score >= 5 || anySingleThree) {
+            // 単一項目で3点の場合も中リスクとして対応を強化
             riskLevel = '中リスク';
             recommendation = '緊急評価が必要。医師への報告と1時間毎の観察。';
             alertClass = 'alert-warning';
-        } else if (score >= 1 && score <= 4) {
+        } else if (score >= 1) {
             riskLevel = '低リスク';
             recommendation = '4-6時間毎の観察。';
             alertClass = 'alert-info';
