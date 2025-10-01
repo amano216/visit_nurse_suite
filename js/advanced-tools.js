@@ -369,6 +369,13 @@ class ADLAssessmentTool extends BaseTool {
             <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
             <div id="barthelResult" class="result-container" style="display: none;"></div>
             <div class="calculator-instance" style="display: none;"></div>
+
+            <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+                <strong>【出典】</strong>
+                FUNCTIONAL EVALUATION: THE BARTHEL INDEX. Md State Med J. 1965;14:61-5. PMID: 14258950 ／
+                Improving the sensitivity of the Barthel Index for stroke rehabilitation. J Clin Epidemiol. 1989;42(8):703-9. PMID: 2760661 ／
+                The Barthel ADL index: self-reporting vs actual performance in the old-old. J Am Geriatr Soc. 1997;45(7):832-6. PMID: 9215334
+            </div>
         `;
     }
 
@@ -731,19 +738,19 @@ class BarthelCalculator {
 
         let independence, recommendation, alertClass;
         if (totalScore >= 85) {
-            independence = '自立';
+            independence = '自立（85~100点）';
             recommendation = '現在の機能を維持するための継続的な支援';
             alertClass = 'alert-success';
         } else if (totalScore >= 60) {
-            independence = '軽度要介助';
+            independence = '部分自立（60~84点）';
             recommendation = '部分的な介助とリハビリテーションの継続';
             alertClass = 'alert-info';
         } else if (totalScore >= 40) {
-            independence = '中等度要介助';
+            independence = '大部分介助（40~59点）';
             recommendation = '日常的な介助とADL改善に向けた積極的な介入';
             alertClass = 'alert-warning';
         } else {
-            independence = '重度要介助';
+            independence = '全介助（0~39点）';
             recommendation = '包括的な介護サービスと専門的なケアが必要';
             alertClass = 'alert-danger';
         }
