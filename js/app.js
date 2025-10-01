@@ -663,6 +663,7 @@ class ToolFactory {
             'cfs': () => new CFSTool(),
             'phq9': () => new PHQ9Tool(),
             'adrop': () => new ADROPTTool(),
+            'curb65': () => new CURB65Tool(),
             'rasspal': () => new RASSPALTool(),
             'cam': () => new CAMTool(),
             'minicog': () => new MiniCogTool(),
