@@ -490,23 +490,37 @@ class SIRSCalculator {
 
 class WoundCalculator {
     calculate() {
-        const depth = parseInt(document.getElementById('woundDepth')?.value) || 0;
-        const exudate = parseInt(document.getElementById('woundExudate')?.value) || 0;
+        // 深さ（Depth）は合計点に加えない
+        const depth = document.getElementById('woundDepth')?.value || '0';
+        // Exudate（滲出液）: なし=0, 少量=1, 中等量=3, 多量=6
+        const exudateMap = { '0': 0, '1': 1, '2': 3, '3': 6 };
+        const exudate = exudateMap[document.getElementById('woundExudate')?.value || '0'];
+        // Size（大きさ）: 0=0, <4=3, 4~<16=6, 16~<36=8, 36~<64=9, 64~<100=12, ≧100=15
         const size = parseFloat(document.getElementById('woundSize')?.value) || 0;
-        const inflammation = parseInt(document.getElementById('woundInflammation')?.value) || 0;
-        const granulation = parseInt(document.getElementById('woundGranulation')?.value) || 0;
-        const necrosis = parseInt(document.getElementById('woundNecrosis')?.value) || 0;
-        const pocket = parseInt(document.getElementById('woundPocket')?.value) || 0;
-
-        // サイズスコア計算
         let sizeScore = 0;
         if (size === 0) sizeScore = 0;
-        else if (size < 4) sizeScore = 1;
-        else if (size < 16) sizeScore = 2;
-        else if (size < 36) sizeScore = 3;
-        else sizeScore = 4;
+        else if (size < 4) sizeScore = 3;
+        else if (size < 16) sizeScore = 6;
+        else if (size < 36) sizeScore = 8;
+        else if (size < 64) sizeScore = 9;
+        else if (size < 100) sizeScore = 12;
+        else sizeScore = 15;
+        // Inflammation/Infection（炎症/感染）
+        // 0:なし=0, 1:炎症徴候あり=1, 2:臨界的定着疑い/膿=3, 3:全身性影響=9
+        const inflammationMap = { '0': 0, '1': 1, '2': 3, '3': 9 };
+        const inflammation = inflammationMap[document.getElementById('woundInflammation')?.value || '0'];
+        // Granulation（肉芽組織）: 0:良好=0, 1:やや不良=3, 2:不良=6
+        const granulationMap = { '0': 0, '1': 3, '2': 6 };
+        const granulation = granulationMap[document.getElementById('woundGranulation')?.value || '0'];
+        // Necrosis（壊死組織）: 0:なし=0, 1:白色・黄色=3, 2:黒色=6
+        const necrosisMap = { '0': 0, '1': 3, '2': 6 };
+        const necrosis = necrosisMap[document.getElementById('woundNecrosis')?.value || '0'];
+        // Pocket（ポケット）: 0:なし=0, 1:<4=6, 2:4~<16=9, 3:16~<36=12, 4:≧36=24
+        // UI上は「なし=0, あり=1」だが、詳細選択が必要な場合は拡張可
+        const pocketMap = { '0': 0, '1': 6 };
+        const pocket = pocketMap[document.getElementById('woundPocket')?.value || '0'];
 
-        const totalScore = depth + exudate + sizeScore + inflammation + granulation + necrosis + pocket;
+        const totalScore = exudate + sizeScore + inflammation + granulation + necrosis + pocket;
 
         this.displayResult(totalScore, {
             depth, exudate, size, sizeScore, inflammation, granulation, necrosis, pocket
