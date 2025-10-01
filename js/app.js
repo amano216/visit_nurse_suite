@@ -668,6 +668,7 @@ class ToolFactory {
             'cam': () => new CAMTool(),
             'minicog': () => new MiniCogTool(),
             'cci': () => new CharlsonTool(),
+            'eat10': () => new EAT10Tool(),
             'stoppstart': () => new STOPPSTARTTool(),
             'beers': () => new BeersTool(),
             'stopbang': () => new STOPBangTool(),
