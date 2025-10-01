@@ -435,6 +435,7 @@ class SearchManager {
             { name: 'ostomy', title: 'ストマケア（DET）', keywords: ['ストマ', 'ストーマ', 'オストミー', 'DET', '皮膚障害', '装具', '尿路', 'カットサイズ', '凸面', 'リング', '面板', '漏れ'], icon: 'fas fa-toilet' },
             { name: 'hf', title: '心不全評価（NYHA/Framingham/プロファイル）', keywords: ['心不全', 'NYHA', 'Framingham', 'うっ血', '起坐呼吸', 'PND', '体重増加', 'Warm', 'Cold', 'Wet', 'Dry'], icon: 'fas fa-heart' },
             { name: 'resp', title: '呼吸評価（mMRC/CAT/SF）', keywords: ['呼吸', 'mMRC', 'CAT', 'SpO2', 'FiO2', '酸素', '酸素濃度', '在宅酸素', 'HOT', 'S/F', 'SF比', 'ROX', 'ROX index', '呼吸数', 'RR', '酸素流量', 'デバイス'], icon: 'fas fa-lungs' },
+            { name: 'jonsson', title: 'Jónsson分類（喘鳴）', keywords: ['喘鳴','wheeze','wheezes','Jonsson','Jónsson','呼吸','吸気','呼気','silent chest'], icon: 'fas fa-wind' },
             { name: 'alsfrs', title: 'ALS-FRS-R', keywords: ['ALS', 'FRS', '球麻痺', '巧緻運動', '呼吸'], icon: 'fas fa-dna' },
             { name: 'braden', title: 'Braden褥瘡リスク', keywords: ['ブレーデン', '褥瘡', '圧迫', 'スキン', '皮膚', 'リスク'], icon: 'fas fa-procedures' },
             { name: 'morse', title: 'Morse転倒リスク', keywords: ['モース', '転倒', 'リスク', '歩行', '補助具', '点滴'], icon: 'fas fa-person-falling' },
@@ -689,6 +690,10 @@ class ToolFactory {
             'ome': () => new OpioidEquivalenceTool(),
             'cpot': () => new CPOTTool(),
             'bps': () => new BPSTool(),
+            // 神経筋
+            'mgc': () => new MGCompositeTool(),
+            // 呼吸（喘鳴）
+            'jonsson': () => new JonssonWheezeTool(),
             // 緩和アウトカム
             'stasj': () => new STASJTool(),
             'ipos': () => new IPOSTool(),
