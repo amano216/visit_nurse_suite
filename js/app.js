@@ -696,6 +696,8 @@ class ToolFactory {
             'socnet': () => new SocialNetworkTool(),
             'zrhome': () => new ZRHomeTool(),
             'snalite': () => new SNALiteTool(),
+            // 体液管理
+            'insensible': () => new InsensibleLossTool(),
         };
 
         const toolCreator = toolMap[toolName];

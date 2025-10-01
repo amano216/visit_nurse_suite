@@ -164,7 +164,23 @@ class CrClTool extends BaseTool {
       </div>
       <div class="form-row">
         <div class="form-group"><label for="crclWeight">体重(kg)</label><input type="number" id="crclWeight" step="0.1" min="1"></div>
-        <div class="form-group"><label for="crclScr">血清クレアチニン(mg/dL)</label><input type="number" id="crclScr" step="0.01" min="0.1"></div>
+        <div class="form-group"><label for="crclScr">血清クレアチニン(mg/dL)</label><input type="number" id="crclScr" step="0.01" min="0.1" placeholder="例: 0.9"></div>
+        <div class="form-group"><label for="crclScrMethod">Cr測定法</label>
+          <select id="crclScrMethod">
+            <option value="enz">酵素法</option>
+            <option value="jaffe">Jaffe法</option>
+          </select>
+        </div>
+      </div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> Cockcroft–Gault式: CCr (mL/min) = (140−年齢)×体重 / (72×血清Cr)（女性は×0.85）。原著（1976）ではJaffe法Crが用いられており、本邦の酵素法Crでは <u>血清Crに+0.2 mg/dLを加算</u> して近似することが推奨されています。</div>
+        <div style="margin-top:6px;"><strong>【使用上の注意】</strong> 体重・筋量が極端（低体重・肥満・サルコペニア等）の場合は不正確になり得ます。必要に応じて体重の扱い（実測/理想/調整）や他式の併用を検討してください。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>Cockcroft DW, Gault MH. Prediction of creatinine clearance from serum creatinine. Nephron. 1976;16(1):31-41.</li>
+            <li>日本腎臓学会 編. エビデンスに基づくCKD診療ガイドライン 2023.</li>
+          </ul>
+        </div>
       </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">計算実行</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
@@ -179,13 +195,19 @@ class CrClCalculator {
     const sex=document.getElementById('crclSex')?.value||'male';
     const wt=parseFloat(document.getElementById('crclWeight')?.value)||0;
     const scr=parseFloat(document.getElementById('crclScr')?.value)||0;
+    const method=document.getElementById('crclScrMethod')?.value||'enz';
     if (age<=0||wt<=0||scr<=0) return this.err('年齢・体重・Crを入力してください。');
-    let crcl=((140-age)*wt)/(72*scr); if (sex==='female') crcl*=0.85;
+    const scrAdj = method==='enz' ? scr + 0.2 : scr; // 酵素法→+0.2補正
+    let crcl=((140-age)*wt)/(72*scrAdj); if (sex==='female') crcl*=0.85;
     const el=document.getElementById('crclResult'); const cat=crcl<30?'高度低下':(crcl<60?'中等度低下':'軽度〜正常'); const alert=crcl<60?'alert-warning':'alert-success';
-    el.innerHTML=`<h3>Cockcroft-Gault</h3><div class="result-item"><strong>CrCl:</strong> <span class="highlight">${crcl.toFixed(1)}</span> mL/min</div><div class="alert ${alert}">腎機能: ${cat}</div>`; el.style.display='block';
+    const methodNote = method==='enz' ? `（酵素法→+0.2補正後のCr=${scrAdj.toFixed(2)} mg/dL）` : '（Jaffe法Cr）';
+    el.innerHTML=`<h3>Cockcroft-Gault</h3>
+      <div class="result-item"><strong>CrCl:</strong> <span class="highlight">${crcl.toFixed(1)}</span> mL/min</div>
+      <div class="result-item"><strong>使用Cr:</strong> ${scr.toFixed(2)} mg/dL ${methodNote}</div>
+      <div class="alert ${alert}">腎機能: ${cat}</div>`; el.style.display='block';
   }
   err(m){ const el=document.getElementById('crclResult'); el.innerHTML=`<div class="alert alert-danger">${m}</div>`; el.style.display='block'; }
-  reset(){ ['crclAge','crclSex','crclWeight','crclScr'].forEach(id=>{const e=document.getElementById(id); if(!e) return; if(e.tagName==='SELECT') e.selectedIndex=0; else e.value='';}); const r=document.getElementById('crclResult'); if(r) r.style.display='none'; }
+  reset(){ ['crclAge','crclSex','crclWeight','crclScr','crclScrMethod'].forEach(id=>{const e=document.getElementById(id); if(!e) return; if(e.tagName==='SELECT') e.selectedIndex=0; else e.value='';}); const r=document.getElementById('crclResult'); if(r) r.style.display='none'; }
 }
 
 // -------- Delirium Quick (4項) --------
@@ -194,6 +216,33 @@ class Delirium4Tool extends BaseTool {
   getIcon(){ return 'fas fa-bed'; }
   renderContent(){
     return `
+      <div class="assessment-section">
+        <h4><i class="fas fa-brain"></i> AIUEOTIPS（意識障害の原因の語呂合わせ）</h4>
+        <div class="form-group">
+          <ul style="margin:6px 0 0 20px;">
+            <li><strong>A</strong>（Alcohol/薬物）：アルコール、鎮静薬、中毒</li>
+            <li><strong>I</strong>（Insulin/代謝）：低血糖・高血糖、電解質異常、甲状腺機能異常</li>
+            <li><strong>U</strong>（Uremia/臓器）：腎不全、肝性脳症、CO2ナルコーシス</li>
+            <li><strong>E</strong>（Electrolytes/環境）：低Na/高Na、低体温/高体温、脱水</li>
+            <li><strong>O</strong>（Oxygen/脳血管）：低酸素、脳梗塞・脳出血、てんかん後</li>
+            <li><strong>T</strong>（Trauma）：頭部外傷、硬膜下血腫</li>
+            <li><strong>I</strong>（Infection）：髄膜炎/脳炎、敗血症</li>
+            <li><strong>P</strong>（Psychiatric/中毒）：精神疾患、薬物性（抗うつ薬・抗精神病薬など）</li>
+            <li><strong>S</strong>（Space-occupying/その他）：脳腫瘍、水頭症、急性閉塞性水頭症 など</li>
+          </ul>
+        </div>
+        <div class="form-group" style="margin-top:6px;">
+          <strong>関連する表・スコア</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>アルコール離脱の評価: CIWA-Ar</li>
+            <li>アルコール依存スクリーニング: CAGE</li>
+            <li>血中エタノール濃度予測 / 浸透圧ギャップ</li>
+            <li>低Na血症の診断フローチャート</li>
+          </ul>
+        </div>
+        <div class="alert alert-info">注意: この語呂合わせは緊急度の順ではありません。実臨床では①ABC（気道・呼吸・循環）の安定、②低血糖の除外、③頭蓋内疾患の評価を優先し、検査は同時並行で行います。</div>
+        <div class="text-muted" style="font-size:0.9em;">注: 呼称としては海外のAEIOU TIPSが原型とされ、本邦ではAIUEOTIPSとして普及しています（出典は明確でないため編集部調べ）。</div>
+      </div>
       <div class="form-row">
         <div class="form-group"><label>覚醒状態</label><select id="dlAlert"><option value="0">正常(0)</option><option value="4">異常(4)</option></select></div>
         <div class="form-group"><label>見当識（AMT4相当）</label><select id="dlOrient"><option value="0">誤り0-1(0)</option><option value="2">誤り2+(2)</option></select></div>
@@ -215,17 +264,67 @@ class SARCFTool extends BaseTool {
   constructor(){ super('sarcf','SARC-F（サルコペニア）','5項目0-2点でサルコペニアの可能性を評価します。'); }
   getIcon(){ return 'fas fa-dumbbell'; }
   renderContent(){
-    const opt = id => `<div class=\"form-group\"><label for=\"${id}\">${id}</label><select id=\"${id}\"><option value=\"0\">0: なし</option><option value=\"1\">1: 中等度</option><option value=\"2\">2: 高度</option></select></div>`;
     return `
-      <div class="form-row">${opt('筋力低下')}${opt('歩行補助')}${opt('椅子立ち上がり')}</div>
-      <div class="form-row">${opt('階段昇降困難')}${opt('転倒歴')}</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="筋力低下">約4.5kgの持ち上げ/運搬はどのくらいむずかしいですか？</label>
+          <select id="筋力低下">
+            <option value="0">まったくむずかしくない（0）</option>
+            <option value="1">いくらかむずかしい（1）</option>
+            <option value="2">とてもむずかしい／できない（2）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="歩行補助">部屋の中を歩くことはどのくらいむずかしいですか？</label>
+          <select id="歩行補助">
+            <option value="0">まったくむずかしくない（0）</option>
+            <option value="1">いくらかむずかしい（1）</option>
+            <option value="2">とてもむずかしい／杖などが必要／できない（2）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="椅子立ち上がり">ベッドや椅子から立ち上がることはどのくらいむずかしいですか？</label>
+          <select id="椅子立ち上がり">
+            <option value="0">まったくむずかしくない（0）</option>
+            <option value="1">いくらかむずかしい（1）</option>
+            <option value="2">とてもむずかしい／介助が必要（2）</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="階段昇降困難">10段くらいの階段をのぼることはどのくらいむずかしいですか？</label>
+          <select id="階段昇降困難">
+            <option value="0">まったくむずかしくない（0）</option>
+            <option value="1">いくらかむずかしい（1）</option>
+            <option value="2">とてもむずかしい／できない（2）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="転倒歴">過去2年間に何回程度転びましたか？</label>
+          <select id="転倒歴">
+            <option value="0">まったくない（0）</option>
+            <option value="1">1–3回（1）</option>
+            <option value="2">4回以上（2）</option>
+          </select>
+        </div>
+      </div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> SARC-Fは5項目を各0–2点で評価し、合計0–10点。<u>4点以上でスクリーニング陽性</u>とされ、IADL障害、歩行速度低下、入院、死亡などと関連することが報告されています。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>Malmstrom TK, Morley JE. SARC-F: a symptom score to predict persons with sarcopenia at risk for poor functional outcomes. J Cachexia Sarcopenia Muscle. 2016;7(1):28–36. PMID: 27066316.</li>
+            <li>Tanaka S, Kamiya K, et al. Utility of SARC-F for Assessing Physical Function in Elderly Patients With Cardiovascular Disease. J Am Med Dir Assoc. 2017;18(2):176–181. PMID: 28043805.</li>
+          </ul>
+        </div>
+      </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
       <div id="sarcfResult" class="result-container" style="display:none"></div>
       <div class="calculator-instance" style="display:none"></div>`;
   }
   render(){ const s=super.render(); const c=new SARCFCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); return s; }
 }
-class SARCFCalculator { calculate(){ const ids=['筋力低下','歩行補助','椅子立ち上がり','階段昇降困難','転倒歴']; const total=ids.reduce((a,id)=> a + (parseInt(document.getElementById(id)?.value)||0),0); const el=document.getElementById('sarcfResult'); const pos= total>=4; el.innerHTML=`<h3>SARC-F</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 10</div><div class="alert ${pos?'alert-warning':'alert-success'}">${pos?'サルコペニアの可能性あり':'可能性は低い'}</div>`; el.style.display='block'; } }
+class SARCFCalculator { calculate(){ const ids=['筋力低下','歩行補助','椅子立ち上がり','階段昇降困難','転倒歴']; const total=ids.reduce((a,id)=> a + (parseInt(document.getElementById(id)?.value)||0),0); const el=document.getElementById('sarcfResult'); const pos= total>=4; el.innerHTML=`<h3>SARC-F</h3><div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span> / 10</div><div class="alert ${pos?'alert-warning':'alert-success'}">${pos?'陽性（4点以上）：サルコペニアの可能性あり。詳細評価を検討':'陰性の可能性：ただし臨床所見と併せて判断'}</div>`; el.style.display='block'; } }
 
 // -------- MUST --------
 class MUSTTool extends BaseTool {
@@ -239,6 +338,30 @@ class MUSTTool extends BaseTool {
         <div class="form-group"><label for="mustPrevWeight">3-6ヶ月前体重(kg)</label><input type="number" id="mustPrevWeight" step="0.1" min="1"></div>
       </div>
       <div class="form-group"><label><input type="checkbox" id="mustAcute"> 急性疾患により>5日間の経口摂取不能</label></div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> MUST（Malnutrition Universal Screening Tool）は、<u>BMI</u>、<u>過去3–6ヶ月の体重減少</u>、<u>急性疾患による摂取不能（>5日）</u>の3項目を点数化し合計で判定します。</div>
+        <div style="margin-top:6px;"><strong>【スコアの計算】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>BMI: <18.5 = 2点、18.5–20 = 1点、>20 = 0点</li>
+            <li>体重減少（過去3–6ヶ月）: >10% = 2点、5–10% = 1点、<5% = 0点</li>
+            <li>急性疾患効果: >5日間の経口摂取不能 = 2点、それ以外 = 0点</li>
+          </ul>
+        </div>
+        <div style="margin-top:6px;"><strong>【スコアの評価】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>0点: 低リスク（スクリーニング継続：病院 毎週／介護施設 毎月／地域 例：75歳以上は毎年）</li>
+            <li>1点: 中リスク（入院・施設では3日間の摂取量を記録、改善なければ移行時等に再評価。スクリーニング継続：病院 毎週／施設 月1以上／地域 2–3ヶ月毎）</li>
+            <li>2点以上: 高リスク（管理栄養士に紹介、栄養摂取量の増加、ケアプランの監視と見直し：病院 毎週／施設 毎週以上／地域 2–3ヶ月毎）</li>
+          </ul>
+        </div>
+        <div style="margin-top:6px;"><strong>【使用上の注意】</strong> 点数が低くても臨床的リスクが高い場合（例: 神経性食思不振症など）があります。入院中は早期の管理栄養士介入を検討してください。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>Malnutrition Action Group (BAPEN). The "MUST" explanatory booklet. http://www.bapen.org.uk/pdfs/must/must_explan.pdf</li>
+            <li>Stratton RJ, et al. Malnutrition in hospital outpatients and inpatients... Br J Nutr. 2004;92(5):799–808. PMID: 15533269.</li>
+          </ul>
+        </div>
+      </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
       <div id="mustResult" class="result-container" style="display:none"></div>
@@ -251,21 +374,85 @@ class MUSTCalculator {
     const h=parseFloat(document.getElementById('mustHeight')?.value)||0; const w=parseFloat(document.getElementById('mustWeight')?.value)||0; const pw=parseFloat(document.getElementById('mustPrevWeight')?.value)||0; const acute=document.getElementById('mustAcute')?.checked||false;
     if (h<=0||w<=0||pw<=0) return this.err('身長・現在体重・過去体重を入力してください。');
     const bmi=w/Math.pow(h/100,2);
-    let bmiScore=0; if (bmi<18.5) bmiScore=2; else if (bmi<20) bmiScore=1;
+  let bmiScore=0; if (bmi<18.5) bmiScore=2; else if (bmi<=20) bmiScore=1; // 18.5–20を含む
     const loss=((pw-w)/pw)*100; let lossScore=0; if (loss>10) lossScore=2; else if (loss>=5) lossScore=1;
     const acuteScore=acute?2:0; const total=bmiScore+lossScore+acuteScore;
     let risk='低'; let alert='alert-success'; if (total>=2){ risk='高'; alert='alert-danger'; } else if (total===1){ risk='中'; alert='alert-warning'; }
     const el=document.getElementById('mustResult');
+    // リスク別推奨
+    let advice='スクリーニング継続（病院: 毎週 / 介護施設: 毎月 / 地域: 年1程度）';
+    if (total===1) advice='3日間の摂取量記録、移行時に再評価。スクリーニング継続（病院: 毎週 / 施設: 月1以上 / 地域: 2–3ヶ月毎）';
+    if (total>=2) advice='管理栄養士へ紹介、栄養摂取増加、ケアプランの監視・見直し（病院: 毎週 / 施設: 毎週以上 / 地域: 2–3ヶ月毎）';
     el.innerHTML=`<h3>MUST</h3>
       <div class="result-item"><strong>BMI:</strong> ${bmi.toFixed(1)}（スコア ${bmiScore}）</div>
       <div class="result-item"><strong>体重減少:</strong> ${loss.toFixed(1)}%（スコア ${lossScore}）</div>
       <div class="result-item"><strong>急性疾患効果:</strong> スコア ${acuteScore}</div>
       <div class="result-item"><strong>合計:</strong> <span class="highlight">${total}</span></div>
-      <div class="alert ${alert}"><strong>栄養リスク:</strong> ${risk}</div>`;
+      <div class="alert ${alert}"><strong>栄養リスク:</strong> ${risk}</div>
+      <div class="text-muted" style="margin-top:6px;">推奨: ${advice}</div>`;
     el.style.display='block';
   }
   err(m){ const el=document.getElementById('mustResult'); el.innerHTML=`<div class="alert alert-danger">${m}</div>`; el.style.display='block'; }
   reset(){ ['mustHeight','mustWeight','mustPrevWeight'].forEach(id=>{const e=document.getElementById(id); if(e) e.value='';}); const c=document.getElementById('mustAcute'); if(c) c.checked=false; const r=document.getElementById('mustResult'); if(r) r.style.display='none'; }
+}
+
+// -------- 不感蒸泄（推定） --------
+class InsensibleLossTool extends BaseTool {
+  constructor(){ super('insensible','不感蒸泄（推定）','体重と体温から不感蒸泄量（皮膚・呼気からの水分喪失）を推定します。'); }
+  getIcon(){ return 'fas fa-droplet'; }
+  renderContent(){
+    return `
+      <div class="form-row">
+        <div class="form-group"><label for="insWeight">体重 (kg)</label><input type="number" id="insWeight" step="0.1" min="1" placeholder="例: 55.0"></div>
+        <div class="form-group"><label for="insTemp">体温 (℃)</label><input type="number" id="insTemp" step="0.1" min="30" max="43" placeholder="例: 37.2"></div>
+      </div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【計算式】</strong> 不感蒸泄 (mL/日) = <u>15 × 体重(kg)</u> + <u>200 × (体温 - 36.8)</u></div>
+        <div style="margin-top:6px;"><strong>【解説】</strong> 不感蒸泄は<em>発汗以外</em>の皮膚および呼気からの水分喪失を指します。安静・常温の健常成人ではおおよそ <u>約900 mL/日（皮膚∼600、呼気∼300）</u> が目安ですが、<u>発熱・熱傷・過換気</u>などで増加します。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>一般社団法人日本静脈経腸栄養学会. 静脈経腸栄養テキストブック. 南江堂, 東京, 2017.</li>
+            <li>日本救急医学会. 医学用語 解説集「不感蒸泄」. https://www.jaam.jp/dictionary/dictionary/index.html</li>
+          </ul>
+        </div>
+      </div>
+      <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">推定する</button>
+      <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
+      <div id="insResult" class="result-container" style="display:none"></div>
+      <div class="calculator-instance" style="display:none"></div>`;
+  }
+  render(){ const s=super.render(); const c=new InsensibleLossCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>c.calculate(); el.reset=()=>c.reset(); return s; }
+}
+class InsensibleLossCalculator {
+  calculate(){
+    const w = parseFloat(document.getElementById('insWeight')?.value)||0;
+    const t = parseFloat(document.getElementById('insTemp')?.value)||0;
+    const el = document.getElementById('insResult'); if(!el) return;
+    if (w<=0 || t<=0){ el.innerHTML = '<div class="alert alert-danger">体重と体温を入力してください。</div>'; el.style.display='block'; return; }
+    const base = 15 * w; // mL/日
+    const feverAdj = 200 * (t - 36.8); // mL/日（体温補正）
+    const totalRaw = base + feverAdj;
+    const total = Math.max(totalRaw, 0); // 下限0
+    const totalL = total / 1000;
+    // 参考: 安静時の目安として皮膚:呼気 ≒ 2:1 程度で内訳表示（厳密ではない）
+    const skinApprox = total * (2/3);
+    const respApprox = total * (1/3);
+    // 参考域
+    let cat='目安域（標準）'; let alert='alert-success';
+    if (total<700){ cat='やや少なめ（環境・低体温など）'; alert='alert-info'; }
+    else if (total>1100){ cat='増加の可能性（発熱・熱傷・過換気等）'; alert='alert-warning'; }
+    const formula = `15×${w.toFixed(1)} + 200×(${t.toFixed(1)}−36.8)`;
+    el.innerHTML = `
+      <h3>不感蒸泄 推定結果</h3>
+      <div class="result-item"><strong>推定量:</strong> <span class="highlight">${total.toFixed(0)}</span> mL/日（約 ${totalL.toFixed(2)} L/日）</div>
+      <div class="result-item"><strong>内訳（参考）:</strong> 皮膚 ≈ ${Math.round(skinApprox)} mL/日 / 呼気 ≈ ${Math.round(respApprox)} mL/日</div>
+      <div class="result-item"><strong>計算式:</strong> ${formula} = ${totalRaw.toFixed(0)} mL/日</div>
+      <div class="alert ${alert}">${cat}</div>
+      <small class="text-muted">注: 実際の喪失量は環境温度・湿度・活動量・皮膚病変・呼吸状態（過換気/人工呼吸）等で大きく変動します。</small>
+    `;
+    el.style.display='block';
+  }
+  reset(){ ['insWeight','insTemp'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; }); const r=document.getElementById('insResult'); if(r) r.style.display='none'; }
 }
 
 // -------- Clinical Frailty Scale (CFS 1-9) --------
@@ -281,6 +468,18 @@ class CFSTool extends BaseTool {
       <div class="form-group">
         <label for="cfsScore">CFSスコア</label>
         <select id="cfsScore">${options.map((t,i)=>`<option value="${i+1}">${t}</option>`).join('')}</select>
+      </div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> CFS（Clinical Frailty Scale）は2005年に提案された、全体的な健康状態に基づく「虚弱」の程度を簡便に把握するスケールです。日本語版では“Frailty”を“虚弱”と表現しています（国内普及の表現）。</div>
+        <div style="margin-top:6px;"><strong>【エビデンス】</strong> CFSはFrailty Indexと高い相関（r≈0.80）を示し、スコア上昇に伴い死亡・施設入所リスクが上昇することが示されています。また、2013年の国際コンセンサスでは、フレイルティのスクリーニングとしてCFSの活用が推奨されています。</div>
+        <div style="margin-top:6px;"><strong>【使用上の注意】</strong> 診断名ではなく重症度の把握を目的とした補助ツールです。病状変化に応じて定期的に再評価してください。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>Rockwood K, et al. A global clinical measure of fitness and frailty in elderly people. CMAJ. 2005;173(5):489–495. PMID: 16129869.</li>
+            <li>Morley JE, et al. Frailty consensus: A call to action. J Am Med Dir Assoc. 2013;14(6):392–397. PMID: 23764209.</li>
+            <li>一般社団法人 日本老年医学会. 臨床虚弱尺度（Clinical Frailty Scale）日本語版.</li>
+          </ul>
+        </div>
       </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
       <div id="cfsResult" class="result-container" style="display:none"></div>
@@ -363,6 +562,12 @@ class ADROPTTool extends BaseTool {
         <div class="form-group"><label for="adSBP">収縮期血圧 (mmHg)</label><input type="number" id="adSBP" min="40" max="250" placeholder="例: 85"></div>
         <small>※ SBP≤90 で1点</small>
       </div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> A-DROPは日本呼吸器学会の市中肺炎重症度分類で、<u>年齢（A）</u>、<u>脱水（D）</u>、<u>呼吸（R）</u>、<u>意識（O）</u>、<u>血圧（P）</u>の5因子を各1点で加点します（CURB-65を日本人向けに調整）。</div>
+        <div style="margin-top:6px;"><strong>【重症度と対応】</strong> 0点: 軽症（外来）、1–2点: 中等症（外来/入院）、3点: 重症（入院）、4–5点: 超重症（ICU）。<u>ショックがあれば超重症</u>として扱います。</div>
+        <div style="margin-top:6px;"><strong>【エビデンス】</strong> 観察研究のメタ解析に基づき、市中肺炎のスクリーニングとして<strong>弱く推奨</strong>。CURB-65やPSIと同程度の予測能が示されています。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong> 一般社団法人 日本呼吸器学会. 成人肺炎診療ガイドライン2024（市中肺炎）.</div>
+      </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
       <div id="adropResult" class="result-container" style="display:none"></div>
@@ -393,12 +598,13 @@ class ADROPCalculator {
 
     const score=[aPos,dPos,rPos,oPos,pPos].filter(Boolean).length;
 
-    let risk='軽症'; let alert='alert-success';
+  let risk='軽症'; let alert='alert-success';
     if (score>=4){ risk='超重症'; alert='alert-danger'; }
     else if (score===3){ risk='重症'; alert='alert-warning'; }
     else if (score<=2 && score>=1){ risk='中等症'; alert='alert-info'; }
 
     const el=document.getElementById('adropResult');
+    // ショック（収縮期≲90で反応不良や乳酸上昇など）が疑われる場合は超重症として扱うべき点に留意。
     el.innerHTML=`<h3>A-DROP結果</h3>
       <div class="result-item"><strong>スコア:</strong> <span class="highlight">${score}</span> / 5（${risk}）</div>
       <div class="result-item"><strong>該当:</strong> A:${aPos?'1':'0'} D:${dPos?'1':'0'} R:${rPos?'1':'0'} O:${oPos?'1':'0'} P:${pPos?'1':'0'}</div>
@@ -663,6 +869,12 @@ class CharlsonTool extends BaseTool {
         </div>
         <small>年齢点の目安：50-59:+1, 60-69:+2, 70-79:+3, 80以上:+4（参考）</small>
       </div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> Charlson併存疾患指数（CCI）は、死亡に寄与する併存疾患に重み付けを行い合計する指標。必要に応じて年齢ポイントを加算して用います。</div>
+        <div style="margin-top:6px;"><strong>【相互排他】</strong> 「糖尿病（合併症なし）」と「糖尿病（臓器障害あり）」、「肝疾患（軽度）」と「肝疾患（中等度〜重度）」、「固形がん」と「転移性固形がん」は重複加点せず高い方のみ採用。</div>
+        <div style="margin-top:6px;"><strong>【参考：10年生存率（1987式）】</strong> 10年生存率 ≈ 0.983^{ e^{CCI×0.9} }（CCIは年齢点を含まない疾患スコア）。古いコホートに基づくため目安として解釈。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong> Charlson ME, et al. J Chronic Dis. 1987;40(5):373–383. PMID:3558716 ／ Quan H, et al. Am J Epidemiol. 2011;173(6):676–682. PMID:21330339</div>
+      </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">計算</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
       <div id="cciResult" class="result-container" style="display:none"></div>
@@ -690,13 +902,27 @@ class CharlsonCalculator {
   agePoint(age){ if (age>=80) return 4; if (age>=70) return 3; if (age>=60) return 2; if (age>=50) return 1; return 0; }
   calculate(){
     const ids=['cciMI','cciCHF','cciPVD','cciCVD','cciDementia','cciCOPD','cciCTD','cciUlcer','cciLiverMild','cciDM','cciDMC','cciHemiplegia','cciRenal','cciCancer','cciLeukemia','cciLymphoma','cciLiverSev','cciMets','cciAIDS'];
-    const total = ids.reduce((a,id)=> a + ((document.getElementById(id)?.checked? parseInt(document.getElementById(id).value):0) ),0);
-    const useAge = document.getElementById('cciAgeUse')?.checked||false; const age=parseInt(document.getElementById('cciAge')?.value)||0; const ap = useAge? this.agePoint(age):0; const sum = total + ap;
+    const get=(id)=> !!document.getElementById(id)?.checked; const w=(id)=> parseInt(document.getElementById(id)?.value)||0;
+    const dm=get('cciDM'), dmc=get('cciDMC');
+    const livMild=get('cciLiverMild'), livSev=get('cciLiverSev');
+    const ca=get('cciCancer'), mets=get('cciMets');
+    let diseaseScore=0;
+    ids.forEach(id=>{
+      if (id==='cciDM' && dmc) return;
+      if (id==='cciLiverMild' && livSev) return;
+      if (id==='cciCancer' && mets) return;
+      if (get(id)) diseaseScore += w(id);
+    });
+    const useAge = document.getElementById('cciAgeUse')?.checked||false; const age=parseInt(document.getElementById('cciAge')?.value)||0; const ap = useAge? this.agePoint(age):0; const sum = diseaseScore + ap;
     const el=document.getElementById('cciResult');
+    const surv10 = Math.pow(0.983, Math.exp(diseaseScore * 0.9));
+    const survPct = isFinite(surv10)? (surv10*100).toFixed(1)+'%' : '-';
     el.innerHTML=`<h3>Charlson CCI</h3>
-      <div class="result-item"><strong>疾患合計:</strong> ${total}</div>
+      <div class="result-item"><strong>疾患合計:</strong> ${diseaseScore}</div>
       <div class="result-item"><strong>年齢点:</strong> ${ap}</div>
       <div class="result-item"><strong>合計スコア:</strong> <span class="highlight">${sum}</span></div>
+      <div class="result-item"><strong>参考: 10年生存率（1987式）:</strong> ${survPct}</div>
+      <div class="text-muted" style="font-size:0.9em;">注: 1987年コホートに基づく推定であり、現在の治療進歩を反映しない可能性があります。</div>
       <div class="alert ${sum>=6?'alert-danger':(sum>=3?'alert-warning':'alert-info')}">高スコアほど予後不良リスクが高い可能性（施設方針/主治医の判断を優先）。</div>`;
     el.style.display='block';
   }
@@ -2042,6 +2268,9 @@ class BPSTool extends BaseTool {
     const o=(arr)=>arr.map((t,i)=>`<option value=\"${i+1}\">${i+1}: ${t}</option>`).join('');
     return `
       <div class="assessment-section">
+        <div class="alert alert-info" style="margin-bottom:8px;">
+          挿管下成人ICU患者向け（BPS）。各項目1-4点、合計3-12点で高いほど疼痛が強いと判断。
+        </div>
         <div class="form-row">
           ${sel('表情', o(['リラックス','わずかなしかめ面','頻回のしかめ面','持続する苦悶顔']))}
           ${sel('上肢', o(['動きなし','時々の屈曲','頻回の屈曲','抵抗/防御']))}
@@ -2051,7 +2280,10 @@ class BPSTool extends BaseTool {
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">採点</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
       <div id="bpsResult" class="result-container" style="display:none"></div>
-      <div class="calculator-instance" style="display:none"></div>`;
+      <div class="calculator-instance" style="display:none"></div>
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <strong>【出典】</strong> Payen JF, et al. Assessing pain in critically ill sedated patients by using a behavioral pain scale. Crit Care Med. 2001;29(12):2258-63. PMID: 11801819
+      </div>`;
   }
   render(){ const s=super.render(); const calc=new BPSCalculator(); const el=s.querySelector('.calculator-instance'); el.calculate=()=>calc.calculate(); el.reset=()=>calc.reset(); return s; }
 }

@@ -376,6 +376,17 @@ class RespiratoryTool extends BaseTool {
           `).join('')}
         </div>
         <div class="result-item" id="catLive">CAT合計: <span class="highlight">0</span>/40</div>
+        <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+          <div><strong>【解説】</strong> CATは8項目を各0–5点で評価し、合計0–40点。一般的な目安は 0–9:軽度、10–20:中等度、21–30:重度、31–40:非常に重度。ガイドライン等ではCAT ≥ 10を症状が強い目安として用います。</div>
+          <div style="margin-top:6px;"><strong>【出典】</strong>
+            <ul style="margin:6px 0 0 20px;">
+              <li>Jones PW, et al. Development and first validation of the COPD Assessment Test (CAT). Eur Respir J. 2009;34(3):648-654. PMID: 19720809.</li>
+              <li>Kon SS, et al. Validation of the CAT in primary care. BMC Pulm Med. 2011;11:42. PMID: 21835018.</li>
+              <li>日本呼吸器学会. COPD診断と治療のためのガイドライン 第6版（2022）.</li>
+              <li>CAT 公式サイト: <a href="https://www.catestonline.org/hcp-homepage.html" target="_blank" rel="noopener">https://www.catestonline.org/hcp-homepage.html</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <div class="assessment-section">
@@ -551,6 +562,17 @@ class ALSFRSTool extends BaseTool {
       ${block('Fine motor（巧緻運動）',[items[3],items[4],items[5]])}
       ${block('Gross motor（粗大運動）',[items[6],items[7],items[8]])}
       ${block('Respiratory（呼吸）',[items[9],items[10],items[11]])}
+      <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
+        <div><strong>【解説】</strong> ALSFRS-Rは12項目を各0–4点で評価し、合計0–48点。改訂版では呼吸機能の3項目（呼吸困難・起坐呼吸・呼吸不全）が追加され、経時的変化の追跡や治験アウトカム指標として広く用いられます。<br>「食事（カトラリー）」は胃瘻の有無で評価基準が異なるため、患者状況に応じて適切に選択してください。</div>
+        <div style="margin-top:6px;"><strong>【参考（生存の概算）】</strong> 文献1（1999）に基づく9か月生存確率の概算: ≤15点≦25%、16–20点≈25–40%、21–25点≈40–60%、26–30点≈60–70%、31–35点≈70–80%、36–40点≈80–90%、≥41点>90%。</div>
+        <div style="margin-top:6px;"><strong>【使用上の注意】</strong> オリジナル報告当時から栄養管理や換気補助など治療は進歩しており、現在の生存は延長している可能性があります。本指標はあくまで補助情報として解釈してください。</div>
+        <div style="margin-top:6px;"><strong>【出典】</strong>
+          <ul style="margin:6px 0 0 20px;">
+            <li>1) The ALSFRS-R: a revised ALS functional rating scale that incorporates assessments of respiratory function. J Neurol Sci. 1999;169(1-2):13-21. PMID: 10540002.</li>
+            <li>2) 日本語版改訂 ALS Functional Rating Scale の検討（脳と神経. 2001;53:346-355）より改変。</li>
+          </ul>
+        </div>
+      </div>
       <button class="btn" onclick="this.parentElement.querySelector('.calculator-instance').calculate()">評価実行</button>
       <button class="btn btn-secondary" onclick="this.parentElement.querySelector('.calculator-instance').reset()">リセット</button>
       <div id="alsResult" class="result-container" style="display:none;"></div>
@@ -583,10 +605,20 @@ class ALSFRSCalculator {
     const gross = scores.alsBedMobility + scores.alsWalking + scores.alsStairs;
     const resp = scores.alsDyspnea + scores.alsOrthopnea + scores.alsRespInsuff;
 
-    let category = '軽度障害';
-    let alertClass = 'alert-success';
-    if (total < 25) { category = '高度障害'; alertClass='alert-danger'; }
-    else if (total < 35) { category = '中等度障害'; alertClass='alert-warning'; }
+  let category = '軽度障害';
+  let alertClass = 'alert-success';
+  if (total < 25) { category = '高度障害'; alertClass='alert-danger'; }
+  else if (total < 35) { category = '中等度障害'; alertClass='alert-warning'; }
+
+  // 9か月生存確率（1999報告に基づく概算）
+  let surv = '';
+  if (total <= 15) surv = '≦25%';
+  else if (total <= 20) surv = '約25–40%';
+  else if (total <= 25) surv = '約40–60%';
+  else if (total <= 30) surv = '約60–70%';
+  else if (total <= 35) surv = '約70–80%';
+  else if (total <= 40) surv = '約80–90%';
+  else surv = '>90%';
 
     const el = document.getElementById('alsResult'); if (!el) return;
     el.innerHTML = `
@@ -596,7 +628,9 @@ class ALSFRSCalculator {
       <div class="result-item"><strong>Fine motor:</strong> ${fine} / 12</div>
       <div class="result-item"><strong>Gross motor:</strong> ${gross} / 12</div>
       <div class="result-item"><strong>Respiratory:</strong> ${resp} / 12</div>
+      <div class="result-item"><strong>9か月生存確率（概算・1999）:</strong> ${surv}</div>
       <div class="alert ${alertClass}"><strong>総合評価:</strong> ${category}。経時的変化に注意し、必要に応じて専門医へ相談してください。</div>
+      <div class="text-muted" style="font-size:0.9em; margin-top:6px;">治療進歩により現在の生存は当時より延長している可能性があります。指標は補助的に解釈してください。</div>
     `;
     el.style.display='block';
   }
