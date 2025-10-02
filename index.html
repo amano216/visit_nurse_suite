@@ -9,6 +9,12 @@
 </head>
 <body>
     <div id="app">
+        <noscript>
+            <div class="alert alert-danger" style="margin:10px 20px;">
+                本アプリはJavaScriptが有効である必要があります。ブラウザ設定でJavaScriptを有効にしてください。
+            </div>
+        </noscript>
+        <div id="runtimeErrorBanner" class="alert alert-danger" style="display:none; margin:10px 20px;"></div>
         <!-- Header -->
         <header class="header">
             <div class="header-content">
@@ -392,5 +398,25 @@
             <script src="js/advanced-tools.js"></script>
             <script src="js/specialty-tools.js"></script>
             <script src="js/expert-tools.js"></script>
+                <script>
+                        // 予期しないエラー可視化（初期ロード時のデバッグ支援）
+                        (function(){
+                            function showBanner(msg){
+                                var el = document.getElementById('runtimeErrorBanner');
+                                if (!el) return;
+                                el.innerHTML = '<strong>エラー:</strong> ' + msg + '<br><small>画面右クリック→検証（Console）で詳細を確認できます。</small>';
+                                el.style.display = 'block';
+                            }
+                            window.addEventListener('error', function(e){
+                                try {
+                                    var src = e.filename ? (' [' + e.filename.split('/').pop() + ':' + e.lineno + ']') : '';
+                                    showBanner(String(e.message||'不明なエラー') + src);
+                                } catch(_) {}
+                            });
+                            window.addEventListener('unhandledrejection', function(e){
+                                try { showBanner('Unhandled Promise rejection: ' + String(e.reason)); } catch(_) {}
+                            });
+                        })();
+                </script>
 </body>
 </html>
