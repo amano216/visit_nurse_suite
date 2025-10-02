@@ -439,6 +439,7 @@ class SearchManager {
             { name: 'eat10', title: 'EAT-10（嚥下）', keywords: ['嚥下','EAT','EAT-10','dysphagia','スクリーニング','誤嚥'], icon: 'fas fa-utensils' },
             { name: 'insensible', title: '不感蒸泄（推定）', keywords: ['不感蒸泄','体液','脱水','発熱','水分出納','蒸泄','insensible'], icon: 'fas fa-droplet' },
             { name: 'mgc', title: 'MG Composite（重症筋無力症）', keywords: ['MG','重症筋無力症','myasthenia','MGC','Composite','眼瞼下垂','複視','嚥下','呼吸','近位筋'], icon: 'fas fa-dumbbell' },
+            { name: 'sudbury', title: 'Sudbury Vertigo Risk Score（めまい）', keywords: ['めまい','Vertigo','Sudbury','小脳症状','複視','構音障害','嚥下障害','失調','運動障害','感覚障害','BPPV','TIA','脳卒中'], icon: 'fas fa-person' },
             { name: 'jonsson', title: 'Jónsson分類（喘鳴）', keywords: ['喘鳴','wheeze','wheezes','Jonsson','Jónsson','呼吸','吸気','呼気','silent chest'], icon: 'fas fa-wind' },
             { name: 'alsfrs', title: 'ALS-FRS-R', keywords: ['ALS', 'FRS', '球麻痺', '巧緻運動', '呼吸'], icon: 'fas fa-dna' },
             { name: 'braden', title: 'Braden褥瘡リスク', keywords: ['ブレーデン', '褥瘡', '圧迫', 'スキン', '皮膚', 'リスク'], icon: 'fas fa-procedures' },
@@ -698,6 +699,8 @@ class ToolFactory {
             'mgc': () => new MGCompositeTool(),
             // 呼吸（喘鳴）
             'jonsson': () => new JonssonWheezeTool(),
+            // めまい
+            'sudbury': () => new SudburyVertigoTool(),
             // 緩和アウトカム
             'stasj': () => new STASJTool(),
             'ipos': () => new IPOSTool(),
