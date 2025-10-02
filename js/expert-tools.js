@@ -772,7 +772,7 @@ class CURB65Tool extends BaseTool {
           <div class="form-group"><label for="cSBP">収縮期血圧 (mmHg)</label><input id="cSBP" type="number" min="30" max="300" placeholder="例: 88"></div>
           <div class="form-group"><label for="cDBP">拡張期血圧 (mmHg)</label><input id="cDBP" type="number" min="20" max="200" placeholder="例: 58"></div>
         </div>
-        <small>呼吸数 ≥30 で1点。血圧は SBP <90 または DBP ≤60 で1点。</small>
+  <small>呼吸数 ≥30 で1点。血圧は SBP &lt;90 または DBP ≤60 で1点。</small>
       </div>
       <div class="citation" style="font-size:0.9em; color:#555; margin-top:12px;">
         <div><strong>【解説】</strong> CURB-65 は <u>Confusion</u> / <u>Urea</u> / <u>Respiratory rate</u> / <u>Blood pressure</u> / <u>Age ≥65</u> の5要素を各1点、合計0–5点で重症度評価します。<u>A-DROP は日本人向け改変版</u>です。</div>
