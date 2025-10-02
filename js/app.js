@@ -15,7 +15,10 @@ class NavigationManager {
 
     init() {
         this.bindEvents();
-        this.loadTool('welcome');
+        // 初期ハッシュに応じてロード
+        this.loadFromHash();
+        // ハッシュ変更でツール切替
+        window.addEventListener('hashchange', () => this.loadFromHash());
     }
 
     bindEvents() {
@@ -38,6 +41,10 @@ class NavigationManager {
             element.addEventListener('click', (e) => {
                 e.preventDefault();
                 const tool = e.currentTarget.getAttribute('data-tool');
+                // ハッシュを更新（ブックマーク/共有用）
+                if (tool && location.hash !== `#${tool}`) {
+                    location.hash = `#${tool}`;
+                }
                 this.loadTool(tool);
                 if (window.innerWidth <= 768) {
                     this.closeMenu();
@@ -51,6 +58,15 @@ class NavigationManager {
                 this.navMenu?.classList.remove('active');
             }
         });
+    }
+
+    loadFromHash() {
+        const hash = (location.hash || '').replace(/^#/, '');
+        if (!hash) {
+            this.loadTool('welcome');
+            return;
+        }
+        this.loadTool(hash);
     }
 
     toggleMenu() {
@@ -82,13 +98,19 @@ class NavigationManager {
         const container = document.getElementById('toolContainer');
         if (container) {
             container.innerHTML = '';
-            
+
             // ツールインスタンスを作成
             const tool = ToolFactory.createTool(toolName);
             if (tool) {
                 const toolElement = tool.render();
                 toolElement.classList.add('tool-section', 'active', 'fade-in');
                 container.appendChild(toolElement);
+            } else {
+                // 不正なハッシュや未実装ツール指定時はウェルカムへフォールバック
+                const welcomeSection = document.getElementById('welcome');
+                if (welcomeSection) {
+                    welcomeSection.classList.add('active');
+                }
             }
         }
     }
@@ -631,6 +653,10 @@ class SearchManager {
         
         // NavigationManagerのloadToolメソッドを呼び出し
         if (window.navigationManager) {
+            // URLハッシュも更新
+            if (toolName && location.hash !== `#${toolName}`) {
+                location.hash = `#${toolName}`;
+            }
             window.navigationManager.loadTool(toolName);
         }
     }
