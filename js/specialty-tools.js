@@ -250,7 +250,7 @@ class SudburyVertigoTool extends BaseTool {
 
       <div class="citation" style="font-size:0.9em; color:#555; margin-top:8px;">
         <div><strong>【どんなスコア？】</strong> 2024年にカナダの前向き多施設コホートで開発・検証された、めまい患者における<strong>重症原因の予測スコア</strong>です（対象2,078人、重症診断5.3%）。</div>
-        <div style="margin-top:6px;"><strong>【性能】</strong> カットオフ <u><5点</u> で <u>感度100%</u>（95%CI 97–100%）、特異度72.1%（95%CI 70.1–74%）、C統計量0.96（95%CI 0.92–0.98）。低リスク群では重症診断0%と報告。</div>
+  <div style="margin-top:6px;"><strong>【性能】</strong> カットオフ <u>&lt;5点</u> で <u>感度100%</u>（95%CI 97–100%）、特異度72.1%（95%CI 70.1–74%）、C統計量0.96（95%CI 0.92–0.98）。低リスク群では重症診断0%と報告。</div>
         <div style="margin-top:6px;"><strong>【使用上の注意】</strong> 現時点で外部検証や本邦検証は限定的です。臨床判断（神経所見、HINTS、危険兆候、バイタル）を優先し、スコアは補助として用いてください。</div>
         <div style="margin-top:6px;"><strong>【出典】</strong> Ohle R, et al. Development of a Clinical Risk Score to Risk Stratify for a Serious Cause of Vertigo in Patients Presenting to the Emergency Department. Ann Emerg Med. 2024 Aug 1:S0196-0644(24)00326-3. PMID: 39093245.</div>
       </div>
@@ -284,7 +284,7 @@ class SudburyVertigoCalculator {
       <h3>Sudbury Vertigo Risk Score</h3>
       <div class="result-item"><strong>合計点:</strong> <span class="highlight">${total}</span></div>
       <div class="alert ${cls}"><strong>${risk}</strong>（参考: 重症診断率 ${rate}） — ${advice}</div>
-      <small>注: しきい値 <5 点で感度100%と報告。陰性でも危険兆候があれば神経所見・HINTS等で再評価。</small>
+  <small>注: しきい値 &lt;5 点で感度100%と報告。陰性でも危険兆候があれば神経所見・HINTS等で再評価。</small>
     `;
     el.style.display='block';
   }
