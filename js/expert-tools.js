@@ -241,7 +241,7 @@ class Delirium4Tool extends BaseTool {
           </ul>
         </div>
         <div class="alert alert-info">注意: この語呂合わせは緊急度の順ではありません。実臨床では①ABC（気道・呼吸・循環）の安定、②低血糖の除外、③頭蓋内疾患の評価を優先し、検査は同時並行で行います。</div>
-        <div class="text-muted" style="font-size:0.9em;">注: 呼称としては海外のAEIOU TIPSが原型とされ、本邦ではAIUEOTIPSとして普及しています（出典は明確でないため編集部調べ）。</div>
+        <div class="text-muted" style="font-size:0.9em;">注: 呼称としては海外のAEIOU TIPSが原型とされ、本邦ではAIUEOTIPSとして普及しています。</div>
       </div>
       <div class="form-row">
         <div class="form-group"><label>覚醒状態</label><select id="dlAlert"><option value="0">正常(0)</option><option value="4">異常(4)</option></select></div>
