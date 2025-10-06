@@ -69,7 +69,8 @@ visit_nurse_suite/
 │   ├── app.js               # コアアプリケーション（SOLID原則）
 ### 上級評価・横断ツール
 │   ├── advanced/            # 高度評価ツール（分割後: sirs.js, wound.js, pain.js, barthel.js）
-│   ├── specialty-tools.js   # 専門領域ツール実装（ストマ/心不全/呼吸/ALS）
+│   ├── additional/          # 追加ツール（分割後: mna.js, news.js, ppi.js, bmi.js, gcs.js, mmse.js）
+│   ├── specialty/           # 専門領域ツール（分割後: ostomy.js, heartfailure.js, respiratory.js, sudbury.js, jonsson.js, alsfrs.js）
 │   └── expert/              # 上級/横断ツール（分割後: braden.js, morse.js, esas.js, pps.js, crcl.js, delirium4.js, sarcf.js, must.js など）
 ├── .github/
 │   └── copilot-instructions.md # 開発ガイドライン
@@ -130,7 +131,7 @@ npx serve .
 
 ### 新しいツールの追加
 
-1. `js/additional-tools.js` に新しいツールクラスを作成：
+1. `js/additional/xxx.js`（または `js/expert/xxx.js`, `js/specialty/xxx.js`）に新しいツールクラスを作成：
 
 ```javascript
 class NewTool extends BaseTool {
