@@ -68,9 +68,9 @@ visit_nurse_suite/
 ├── js/
 │   ├── app.js               # コアアプリケーション（SOLID原則）
 ### 上級評価・横断ツール
-│   ├── advanced-tools.js    # 高度評価ツール実装
+│   ├── advanced/            # 高度評価ツール（分割後: sirs.js, wound.js, pain.js, barthel.js）
 │   ├── specialty-tools.js   # 専門領域ツール実装（ストマ/心不全/呼吸/ALS）
-│   └── expert-tools.js      # 上級/横断ツール実装（Braden/Morse/ESAS/PPS/CrCl/Delirium4/SARC-F/MUST）
+│   └── expert/              # 上級/横断ツール（分割後: braden.js, morse.js, esas.js, pps.js, crcl.js, delirium4.js, sarcf.js, must.js など）
 ├── .github/
 │   └── copilot-instructions.md # 開発ガイドライン
 └── README.md               # プロジェクトドキュメント
@@ -200,3 +200,31 @@ class NewTool extends BaseTool {
 ---
 
 **注意**: このツールは医療従事者向けの補助ツールです。最終的な診断や治療方針の決定は、必ず医師の判断に従ってください。
+
+## 🔧 リファクタリング方針（モジュール分割）
+
+本プロジェクトは、将来的なツール追加に耐えられるよう、巨大な monolith を段階的に `js/expert/*.js` へ分割しています。
+
+- 分割済みのファイル（例）
+    - `js/expert/minori.js` … 卒業判定（みのり）
+    - `js/expert/stopbang.js` … STOP-Bang（OSA）
+    - `js/expert/o2time.js` … 酸素ボンベ残時間
+    - `js/expert/drip.js` … 点滴速度（滴下計算）
+
+### 読み込み順の原則
+
+1. `js/app.js`（BaseTool/Factory/Searchを提供）
+2. 既存の `additional/specialty`
+3. 分割した個別ファイル（`js/expert/*.js`）
+
+`index.html` の末尾スクリプトでこの順序を維持しています。
+
+### 新しいツールの追加手順（推奨）
+
+1. `js/expert/yourtool.js` を新規作成し、`BaseTool` を継承したツールと Calculator を定義
+2. `ToolFactory.createTool()` に `'yourtool': () => new YourTool()` を追加（`js/app.js`）
+3. `SearchManager.initializeToolData()` にタイトル・キーワード・アイコンを追加（`js/app.js`）
+4. `index.html` のナビゲーション/Welcomeカードにリンク追加
+5. `index.html` のスクリプト読み込みに `js/expert/yourtool.js` を追記（モジュールは `app.js` の後に読み込み）
+
+これにより、既存コードへの改変を最小化しつつ Open/Closed を満たす拡張が可能です。

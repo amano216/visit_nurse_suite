@@ -55,9 +55,11 @@
   <!-- 本体スクリプト（グローバルクラス参照用） -->
   <script src="../js/app.js"></script>
   <script src="../js/additional-tools.js"></script>
-  <script src="../js/advanced-tools.js"></script>
   <script src="../js/specialty-tools.js"></script>
-  <script src="../js/expert-tools.js"></script>
+  <!-- 必要なモジュールのみ読み込み（OME/BT, CPOT, BPS） -->
+  <script src="../js/expert/ome.js"></script>
+  <script src="../js/expert/cpot.js"></script>
+  <script src="../js/expert/bps.js"></script>
 
   <!-- テスト実行 -->
   <script src="./tests.js"></script>
