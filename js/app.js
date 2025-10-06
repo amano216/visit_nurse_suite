@@ -499,8 +499,8 @@ class SearchManager {
             { name: 'ome', title: 'オピオイド等価換算（OME/BT）', keywords: ['OME','OMED','等価換算','経口モルヒネ','モルヒネ換算','ブレイクスルー','BT','rescue','breakthrough','オピオイド','鎮痛','換算','経口','PO','貼付','パッチ','TD','静注','IV','皮下注','SC'], icon: 'fas fa-scale-balanced' },
             { name: 'cpot', title: 'CPOT（非言語的疼痛）', keywords: ['CPOT','疼痛','表情','筋緊張','体動','人工呼吸器','非言語','評価'], icon: 'fas fa-face-grimace' },
             { name: 'bps', title: 'BPS（Behavioral Pain Scale）', keywords: ['BPS','疼痛','表情','上肢','人工呼吸器','行動','非言語'], icon: 'fas fa-person' },
-            // 卒業判定（みのり）
-            { name: 'minori', title: '卒業判定（みのり）', keywords: ['卒業','みのり','判定','継続','卒業不可','卒業予備群','卒業基準','自己効力感','対処能力','社会参加','支援線','精神','認知','身体機能'], icon: 'fas fa-graduation-cap' },
+            // みのり卒業判定
+            { name: 'minori', title: 'みのり卒業判定', keywords: ['卒業','みのり','判定','継続','卒業不可','卒業予備群','卒業基準','自己効力感','対処能力','社会参加','支援線','精神','認知','身体機能'], icon: 'fas fa-graduation-cap' },
             // 緩和アウトカム
             { name: 'stasj', title: 'STAS-J（医療者評価）', keywords: ['STAS','緩和','アウトカム','症状','家族','霊的','情報','コミュニケーション'], icon: 'fas fa-people-group' },
             { name: 'ipos', title: 'IPOS（患者/医療者）', keywords: ['IPOS','患者報告','PRO','症状','緩和','満足','スピリチュアル','family'], icon: 'fas fa-user-injured' },
