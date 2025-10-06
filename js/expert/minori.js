@@ -1,6 +1,6 @@
 // -------- 卒業判定（みのり） --------
 class MinoriGraduationTool extends BaseTool {
-  constructor(){ super('minori','卒業判定（みのり）','みのり訪問看護ステーションの卒業基準（5項目×0-4点、合計20点）で判定します。'); }
+  constructor(){ super('minori','みのり卒業判定','みのり訪問看護ステーションの卒業基準（5項目×0-4点、合計20点）で判定します。'); }
   getIcon(){ return 'fas fa-graduation-cap'; }
   renderContent(){
     const opt = (pairs) => pairs.map(([v,t])=>`<option value="${v}">${v}: ${t}</option>`).join('');
