@@ -63,7 +63,7 @@ class MinoriGraduationCalculator {
     const el=document.getElementById('minoriResult');
     if (!el) return;
     el.innerHTML = `
-      <h3>卒業判定（みのり）</h3>
+  <h3>みのり卒業判定</h3>
       <div class="result-item"><strong>自己効力感:</strong> ${vals.self} 点</div>
       <div class="result-item"><strong>対処能力:</strong> ${vals.coping} 点</div>
       <div class="result-item"><strong>身体機能:</strong> ${vals.physical} 点</div>

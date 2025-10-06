@@ -207,7 +207,7 @@ class NewTool extends BaseTool {
 本プロジェクトは、将来的なツール追加に耐えられるよう、巨大な monolith を段階的に `js/expert/*.js` へ分割しています。
 
 - 分割済みのファイル（例）
-    - `js/expert/minori.js` … 卒業判定（みのり）
+    - `js/expert/minori.js` … みのり卒業判定
     - `js/expert/stopbang.js` … STOP-Bang（OSA）
     - `js/expert/o2time.js` … 酸素ボンベ残時間
     - `js/expert/drip.js` … 点滴速度（滴下計算）
