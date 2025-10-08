@@ -463,6 +463,7 @@ class SearchManager {
             { name: 'mgc', title: 'MG Composite（重症筋無力症）', keywords: ['MG','重症筋無力症','myasthenia','MGC','Composite','眼瞼下垂','複視','嚥下','呼吸','近位筋'], icon: 'fas fa-dumbbell' },
             { name: 'sudbury', title: 'Sudbury Vertigo Risk Score（めまい）', keywords: ['めまい','Vertigo','Sudbury','小脳症状','複視','構音障害','嚥下障害','失調','運動障害','感覚障害','BPPV','TIA','脳卒中'], icon: 'fas fa-person' },
             { name: 'jonsson', title: 'Jónsson分類（喘鳴）', keywords: ['喘鳴','wheeze','wheezes','Jonsson','Jónsson','呼吸','吸気','呼気','silent chest'], icon: 'fas fa-wind' },
+            { name: 'catchpeds', title: 'CATCH（小児頭部外傷）', keywords: ['CATCH','小児','頭部外傷','CT','GCS','嘔吐','意識消失','健忘','受傷','危険機転','骨折','頭皮血腫','2歳','易刺激性','バトル徴','CSF漏'], icon: 'fas fa-child' },
             { name: 'alsfrs', title: 'ALS-FRS-R', keywords: ['ALS', 'FRS', '球麻痺', '巧緻運動', '呼吸'], icon: 'fas fa-dna' },
             { name: 'braden', title: 'Braden褥瘡リスク', keywords: ['ブレーデン', '褥瘡', '圧迫', 'スキン', '皮膚', 'リスク'], icon: 'fas fa-procedures' },
             { name: 'morse', title: 'Morse転倒リスク', keywords: ['モース', '転倒', 'リスク', '歩行', '補助具', '点滴'], icon: 'fas fa-person-falling' },
@@ -742,6 +743,8 @@ class ToolFactory {
             'snalite': () => new SNALiteTool(),
             // 体液管理
             'insensible': () => new InsensibleLossTool(),
+            // 小児頭部外傷
+            'catchpeds': () => new CATCHPedsTool(),
         };
 
         const toolCreator = toolMap[toolName];
